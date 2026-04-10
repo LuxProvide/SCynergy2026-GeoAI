@@ -8,7 +8,6 @@ site_description: A tutorial on how to fine-tune a geospatial foundation model (
 site_author: Eun-Kyeong Kim
 site_dir: public
 site_url: "https://LuxProvide.github.io/SCynergy2026-GeoAI"
-"
 
 # Repository
 repo_name: LuxProvide/SCynergy2026-GeoAI
