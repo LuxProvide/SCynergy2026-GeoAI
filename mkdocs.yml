@@ -1,0 +1,116 @@
+site_name: Rust on MeluXina Accelerators
+nav:
+  - Tutorial description: 'index.md'
+  - Rust on MeluXina: 
+      - Accelerators and setup: 'rust.md'
+      - Rust with CUDA: 'rust_cuda.md'
+      - Rust with OpenCL: 'rust_opencl.md'
+
+site_description: Webinar/Tutorial on how to use Rust on MeluXina Accelerators (GPUs + FPGAs) 
+site_author: Emmanuel Kieffer
+site_dir: public
+site_url: "https://LuxProvide.github.io/RustOnAccelerators"
+
+# Repository
+repo_name: LuxProvide/RustOnAccelerators
+repo_url: https://github.com/LuxProvide/RustOnAccelerators.git
+
+# Copyright
+copyright: Copyright &copy; 2026 LuxProvide
+
+
+# Configuration
+# strict: true
+
+theme:
+  name: material
+  logo: assets/LuxProvide_logo_white.svg
+  favicon: assets/favicon.png
+  custom_dir: overrides
+  language: en
+  features:
+    - navigation.expand
+    - toc.integrate
+    - content.code.copy
+    - content.code.select
+
+plugins:
+  - search # necessary for search to work
+  - progress
+  - include-markdown
+
+# Extra stylesheets (incl. Twitter Bootstrap)
+extra_css:
+  - stylesheets/extra.css
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+#  - https://unpkg.com/katex@0/dist/katex.min.css
+# - stylesheets/bootstrap.min.css
+
+# Extra javascript
+extra_javascript:
+  - javascripts/extra.js
+  - javascripts/bootstrap.min.js
+  #- https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js
+  # https://squidfunk.github.io/mkdocs-material/reference/data-tables/#sortable-tables
+  - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
+  - javascripts/tables.js
+  - javascripts/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+  #- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js  
+  #- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+#  - https://unpkg.com/katex@0/dist/katex.min.js
+#  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+
+#  - javascripts/mathjax.js
+#  - https://polyfill.io/v3/polyfill.min.js?features=es6
+#  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+
+# Extensions
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  # notes, warnings, hints, ...
+  - admonition
+  - codehilite:
+      guess_lang: true
+  - footnotes
+  - markdown_include.include:
+      base_path: docs
+  - markdown.extensions.admonition
+  - meta
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  # Icons from Emoji extensions, giving access to following icon sets:
+  # - Material Design: https://materialdesignicons.com/
+  # - FontAwesome:     https://fontawesome.com/icons?d=gallery&m=free
+  # – Octicons:        https://octicons.github.com/
+  # - pymdownx.emoji:
+  #     emoji_index: !!python/name:materialx.emoji.twemoji
+  #     emoji_generator: !!python/name:materialx.emoji.to_svg
+  # auto-link HTML, FTP, and email links
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      social_url_shorthand: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed
+  - pymdownx.smartsymbols
+  # code blocks with syntax highlighting, graphs
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - toc:
+      permalink: true
