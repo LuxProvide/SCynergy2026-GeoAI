@@ -9,5 +9,4 @@ mkdocs-macros-plugin
 mkdocs-material
 mkdocs-material-extensions
 mkdocs-plugin-progress
-mkdocs-plugin-progress
 markdown-include
