@@ -1,18 +1,12 @@
 site_name: SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics
 nav:
   - Overview: 'index.md'
-  - Connect to Open OnDemand: 'rust.md'
-  - GeoFM - TerraMind: 'rust_cuda.md'
+  - Connecting to MeluXina: 'connect_meluxina.md'
 
 site_description: A tutorial on how to fine-tune a geospatial foundation model (GeoFMs) on MeluXina (GPU)
 site_author: Eun-Kyeong Kim
 site_dir: public
 site_url: "https://LuxProvide.github.io/SCynergy2026-GeoAI"
-
-# Repository
-repo_name: LuxProvide/SCynergy2026-GeoAI
-
-repo_url: https://github.com/LuxProvide/SCynergy2026-GeoAI.git
 
 # Copyright
 copyright: Copyright &copy; 2026 LuxProvide
