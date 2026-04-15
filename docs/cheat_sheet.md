@@ -19,16 +19,16 @@ Students should understand that they are **querying a catalog**, not manually do
 
 ### Temporal Phases
 Why the workflow uses:
-- pre-event
-- event
-- post-event
+* pre-event
+* event
+* post-event
 
 👉 Floods are dynamic — comparing time periods improves detection.
 
 ### Scene Selection Logic
 Why:
-- Sentinel-2 → filter clouds
-- Sentinel-1 → prioritize time + coverage
+* Sentinel-2 → filter clouds
+* Sentinel-1 → prioritize time + coverage
 
 👉 “Best scene” depends on task, not just recency.
 
@@ -41,9 +41,9 @@ This ensures reproducibility by recording selected scenes.
 
 ### Common Grid
 All datasets are transformed into:
-- same coordinate system
-- same resolution
-- same spatial extent
+* same coordinate system
+* same resolution
+* same spatial extent
 
 👉 This enables pixel-wise comparison across modalities.
 
@@ -55,8 +55,8 @@ Invalid pixels become NaN and are masked to prevent incorrect learning.
 
 ### Chip Extraction
 Large images are divided into smaller patches (e.g., 256×256):
-- fits GPU memory
-- enables batch processing
+* fits GPU memory
+* enables batch processing
 
 ### Memory Efficiency
 Data is stored using memory mapping to handle large files efficiently.
@@ -71,9 +71,9 @@ Inputs follow shape:
 
 ### Multimodal Fusion
 The model combines:
-- optical (Sentinel-2)
-- radar (Sentinel-1)
-- terrain (DEM)
+* optical (Sentinel-2)
+* radar (Sentinel-1)
+* terrain (DEM)
 
 ### Temporal Handling
 DEM is repeated across time because the model expects temporal inputs.
@@ -84,6 +84,6 @@ Model predicts flood vs non-flood segmentation masks.
 ---
 
 ## Important Notes
-- Alignment enables fusion.
-- Data quality drives model quality.
-- This pipeline is reusable beyond floods.
+* Alignment enables fusion.
+* Data quality drives model quality.
+* This pipeline is reusable beyond floods.
