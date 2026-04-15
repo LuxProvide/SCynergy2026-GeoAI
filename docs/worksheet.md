@@ -44,6 +44,6 @@
 
 ## Reflection Questions
 
-- Which part of the pipeline was most surprising or new to you?
-- Where do you think errors or uncertainties could arise?
-- How could this workflow be adapted to another application (e.g., wildfire, agriculture)?
+* Which part of the pipeline was most surprising or new to you?
+* Where do you think errors or uncertainties could arise?
+* How could this workflow be adapted to another application (e.g., wildfire, agriculture)?
