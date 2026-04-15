@@ -1,6 +1,6 @@
 site_name: SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics
 nav:
-  - Overview: 'overview.md'
+  - Overview: 'index.md'
     - Worksheet: 'worksheet.md'
     - Cheat Sheet: 'cheat_sheet.md'
     - FAQ: 'faq.md'
