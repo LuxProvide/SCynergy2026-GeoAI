@@ -40,13 +40,13 @@ By the end of this workshop, you will:
 You will work through three notebooks:
 
 1. **Data Acquisition**
-   * Search and select satellite data using STAC
+  - Search and select satellite data using STAC
 
 2. **Data Packaging**
-   * Align and transform data into model-ready format
+  - Align and transform data into model-ready format
 
 3. **Model Inference**
-   * Run TerraMind to detect flooded areas
+  - Run TerraMind to detect flooded areas
 
 ---
 
@@ -61,8 +61,10 @@ A major focus of this workshop is understanding how **geospatial preprocessing e
 ## Platform
 
 This workshop runs on:
-* **MeluXina GPU cluster**
-* **Open OnDemand JupyterLab**
+
+  * **MeluXina GPU cluster**
+  
+  * **Open OnDemand JupyterLab**
 
 No prior HPC experience is required.
 
@@ -71,18 +73,18 @@ No prior HPC experience is required.
 ## Who is this for?
 
 This workshop is designed for:
-* AI / ML practitioners interested in geospatial data
-* Remote sensing / GIS experts exploring AI methods
-* Researchers working with Earth observation data
+  * AI / ML practitioners interested in geospatial data
+  * Remote sensing / GIS experts exploring AI methods
+  * Researchers working with Earth observation data
 
 ---
 
 ## What you will build
 
 By the end, you will have:
-* Executed a complete **GeoAI pipeline**
-* Understood how TerraMind works in practice
-* Gained a reusable workflow for other EO applications
+  * Executed a complete **GeoAI pipeline**
+  * Understood how TerraMind works in practice
+  * Gained a reusable workflow for other EO applications
 
 ---
 
