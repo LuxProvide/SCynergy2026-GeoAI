@@ -1,7 +1,13 @@
 site_name: SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics
 nav:
   - Overview: 'index.md'
+    - Worksheet: 'worksheet.md'
+    - Cheat Sheet: 'cheat_sheet.md'
+    - FAQ: 'faq.md'
   - Connecting to MeluXina: 'connect_meluxina.md'
+  - Notebook 01 Acquisition: '01_multimodal_data_acquisition_lux.md'
+  - Notebook 02 Packaging: '02_multimodal_data_packaging_lux.md'
+  - Notebook 03 Inference: '03_multimodal_inference_lux.md'
 
 site_description: A tutorial on how to fine-tune a geospatial foundation model (GeoFMs) on MeluXina (GPU)
 site_author: Eun-Kyeong Kim
