@@ -9,10 +9,14 @@ Author: Eun-Kyeong Kim (eun-kyeong.kim@lxp.lu), LuxProvide S.A
 This workshop introduces how **multimodal geospatial data** can be used together with a **foundation model (TerraMind)** to perform flood mapping. This tutorial is given in the context of the [Scynergy 2026 event](https://www.scynergy.events/) and [EPICURE](https://epicure-hpc.eu/).
 
 You will learn how satellite data from different sources (Sentinel-1, Sentinel-2, and DEM) can be:
-* discovered
-* aligned
-* transformed
-* and used for AI-based prediction
+
+- discovered
+
+- aligned
+
+- transformed
+
+- and used for AI-based prediction
 
 ---
 
@@ -39,17 +43,11 @@ By the end of this workshop, you will:
 ### Part 2 — Hands-on (60 minutes)
 You will work through three notebooks:
 
-1. **Data Acquisition**
+1. **Data Acquisition**: Search and select satellite data using STAC
 
-- Search and select satellite data using STAC
+2. **Data Packaging**: Align and transform data into model-ready format
 
-2. **Data Packaging**
-
-- Align and transform data into model-ready format
-
-3. **Model Inference**
-
-- Run TerraMind to detect flooded areas
+3. **Model Inference**: Run TerraMind to detect flooded areas
 
 ---
 
