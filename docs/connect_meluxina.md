@@ -1,5 +1,3 @@
-![SCynergy 2026](./assets/scynergy2026.png){ width="640" }
-
 # Hands-on: Configuring your access to MeluXina
 
 This part will help you to configure your access to MeluXina.
