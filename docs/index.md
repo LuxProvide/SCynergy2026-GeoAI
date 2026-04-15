@@ -1,3 +1,5 @@
+![SCynergy 2026](./assets/scynergy2026.png){ width="640" }
+
 # SCynergy 2026 - GeoAI Workshop — Overview
 
 Author: Eun-Kyeong Kim (eun-kyeong.kim@lxp.lu), LuxProvide S.A
@@ -98,5 +100,11 @@ By the end, you will have:
 - [Raster reprojection with Rasterio](https://rasterio.readthedocs.io/en/stable/topics/reproject.html) 
 - [Sen1Floods11 benchmark description](https://docs.lxp.lu/web_services/open_ondemand/howtojlab/) 
 - [MeluXina Open OnDemand JupyterLab docs](https://rasterio.readthedocs.io/en/stable/topics/reproject.html) 
-- [MeluXina Open OnDemand JupyterLab](https://docs.lxp.lu/web_services/open_ondemand/jlab_env/) 
+- [MeluXina Open OnDemand JupyterLab](https://docs.lxp.lu/web_services/open_ondemand/jlab_env/)
+
+
+---
+
+[![EPICURE](./assets/logo_epicure.png){ width="420" }](https://epicure-hpc.eu/) 
+[![LuxProvide](./assets/logo_luxprovide.png){ width="320" }](https://luxprovide.lu)
 
