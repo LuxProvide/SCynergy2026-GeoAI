@@ -4,10 +4,6 @@
 
 A tutorial on how to fine-tune a geospatial foundation model (GeoFMs) on MeluXina (GPU)
 
-## Content
-
-## Who is the course for
-
 ## About this course
 
 This course has been developed by the Supercomputing Application Services group at LuxProvide.
