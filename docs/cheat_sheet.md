@@ -2,6 +2,7 @@
 
 ## 🧭 End-to-End Pipeline 
 This workshop demonstrates a full GeoAI workflow:
+
 1. **Data Acquisition** – selecting relevant satellite scenes using STAC
 2. **Data Alignment** – ensuring all datasets share the same spatial grid
 3. **Data Packaging** – converting large scenes into model-ready tensors
@@ -19,6 +20,7 @@ Students should understand that they are **querying a catalog**, not manually do
 
 ### Temporal Phases
 Why the workflow uses:
+
 * pre-event
 * event
 * post-event
@@ -27,6 +29,7 @@ Why the workflow uses:
 
 ### Scene Selection Logic
 Why:
+
 * Sentinel-2 → filter clouds
 * Sentinel-1 → prioritize time + coverage
 
@@ -41,6 +44,7 @@ This ensures reproducibility by recording selected scenes.
 
 ### Common Grid
 All datasets are transformed into:
+
 * same coordinate system
 * same resolution
 * same spatial extent
@@ -55,6 +59,7 @@ Invalid pixels become NaN and are masked to prevent incorrect learning.
 
 ### Chip Extraction
 Large images are divided into smaller patches (e.g., 256×256):
+
 * fits GPU memory
 * enables batch processing
 
@@ -71,6 +76,7 @@ Inputs follow shape:
 
 ### Multimodal Fusion
 The model combines:
+
 * optical (Sentinel-2)
 * radar (Sentinel-1)
 * terrain (DEM)
