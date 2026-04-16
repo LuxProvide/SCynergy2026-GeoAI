@@ -145,7 +145,6 @@ def fetch_item(collection: str, item_id: str):
 
 def build_target_grid() -> dict:
     """Project the ROI bounding box to UTM and return grid metadata.
-
     Returns a dict with keys: crs, transform, width, height, bounds.
     The rasterio `transform` maps pixel coordinates to UTM coordinates.
     """
