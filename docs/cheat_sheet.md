@@ -15,8 +15,7 @@ This workshop demonstrates a full GeoAI workflow:
 ## 📘 Notebook 1 — Data Acquisition
 
 ### Key Concept: STAC
-STAC (SpatioTemporal Asset Catalog) is a structured way to search geospatial datasets by location, time, and metadata.  
-Students should understand that they are **querying a catalog**, not manually downloading files.
+STAC (SpatioTemporal Asset Catalog) is a structured way to search geospatial datasets by location, time, and metadata. It means that, with STAC, you are **querying a catalog**, not manually downloading files.
 
 ### Temporal Phases
 Why the workflow uses:
