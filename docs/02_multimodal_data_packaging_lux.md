@@ -27,6 +27,7 @@ manifest JSON   ──►  download & reproject  ──►  full-scene arrays (.
 ### 1 · Imports
 
 Key packages:
+
 - **`rasterio`** — reads geospatial rasters and performs reprojection
 - **`numpy`** — array storage and manipulation
 - **`tqdm`** — progress bars for long downloads
@@ -178,10 +179,6 @@ grid
 
     Analysis grid: 6033 × 8449 px  @ 10 m/px  (EPSG:32632)
 
-
-
-
-
     {'crs': 'EPSG:32632',
      'transform': Affine(np.float64(9.999522215554327), np.float64(0.0), np.float64(263209.339809777),
             np.float64(0.0), np.float64(-9.999990001154945), np.float64(5564086.599782167)),
@@ -251,7 +248,6 @@ def phase_item(phase: str, modality: str):
 
 def load_s1_phase(phase: str) -> np.ndarray:
     """Download and reproject S1 VV + VH for one temporal phase.
-
     Returns shape: (2, H, W)  — channel dimension = [VV, VH].
     """
     item = phase_item(phase, "S1RTC")
@@ -262,7 +258,6 @@ def load_s1_phase(phase: str) -> np.ndarray:
 
 def load_s2_phase(phase: str) -> np.ndarray:
     """Download and reproject all 12 S2 bands for one temporal phase.
-
     Returns shape: (12, H, W)  — one slice per band in S2_BANDS order.
     """
     item = phase_item(phase, "S2L2A")
@@ -275,9 +270,7 @@ def load_s2_phase(phase: str) -> np.ndarray:
 
 def load_dem() -> np.ndarray:
     """Mosaic all DEM tiles covering the ROI and return a single elevation array.
-
     Multiple tiles are averaged over overlapping regions (nanmean).
-
     Returns shape: (1, H, W)  — single elevation channel.
     """
     dem_entries = manifest.get("dem_items", [])
@@ -323,7 +316,6 @@ DEM   : (C=1,       H, W)   — static (no time axis yet)
 ```python
 def save_full_scene_arrays(force: bool = False):
     """Download, reproject and stack all modalities; return memory-mapped arrays.
-
     If cached `.npy` files already exist and *force* is False, the files are
     memory-mapped (fast, zero-copy) rather than re-downloaded.
 
@@ -431,7 +423,6 @@ label is not required for inference, only for the optional visualisation below.
 ```python
 def load_optional_ems_label():
     """Rasterise the Copernicus EMS flood layer if the geodatabase is on disk.
-
     Returns a uint8 array (H, W) with 1 = flooded, 0 = dry, or None if the
     file is not found.
     """
@@ -515,7 +506,6 @@ and quality metrics.
 ```python
 def build_chip_manifest(force: bool = False) -> pd.DataFrame:
     """Slide a window over the full scene and record valid chip locations.
-
     Returns a DataFrame with columns:
         chip_id, row0, row1, col0, col1, chip_valid_fraction, label_fraction
     """
@@ -776,7 +766,6 @@ Columns: **S2 RGB · S1 VV (dB) · S1 VH (dB) · DEM · valid mask**
 def linear_stretch(array: np.ndarray, mask: np.ndarray | None = None,
                    p_low: float = 2, p_high: float = 98) -> np.ndarray:
     """Stretch array values to [0, 1] using percentile clipping.
-
     Useful for visualising images with very different dynamic ranges.
     """
     array = array.astype("float32")
