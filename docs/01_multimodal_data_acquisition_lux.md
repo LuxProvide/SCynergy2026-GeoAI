@@ -21,6 +21,7 @@ the data without re-querying the catalogue.
 ### 1 · Imports
 
 We use:
+
 - **`pystac_client`** — Python client for querying STAC catalogues
 - **`planetary_computer`** — signs asset URLs so they are temporarily downloadable
 - **`geopandas` / `shapely`** — work with geographic geometries
@@ -168,11 +169,6 @@ admin_gdf.plot(ax=ax, color='white', edgecolor='black')
 
 plt.show()
 ```
-
-    /project/home/lxp/ekim/dev/venvs/scynergyTest/lib/python3.13/site-packages/pyogrio/geopandas.py:382: UserWarning: More than one layer found in 'limadmin.geojson': 'cantons' (default), 'communes', 'districts', 'pays'. Specify layer parameter to avoid this warning.
-      result = read_func(
-
-
 
     
 ![png](./images/output_6_1.png)
