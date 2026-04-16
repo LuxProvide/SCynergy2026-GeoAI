@@ -107,8 +107,8 @@ By the end, you will have:
 - [TerraTorch TerraMind guid](https://terrastackai.github.io/terratorch/1.2.6/guide/terramind/)
 - [STAC / Planetary Computer tutorial](https://stacspec.org/en/tutorials/reading-stac-planetary-computer/) 
 - [Raster reprojection with Rasterio](https://rasterio.readthedocs.io/en/stable/topics/reproject.html) 
-- [Sen1Floods11 benchmark description](https://docs.lxp.lu/web_services/open_ondemand/howtojlab/) 
-- [MeluXina Open OnDemand JupyterLab docs](https://rasterio.readthedocs.io/en/stable/topics/reproject.html) 
+- [Sen1Floods11 benchmark description](https://experts.arizona.edu/en/publications/sen1floods11-a-georeferenced-dataset-to-train-and-test-deep-learn/) 
+- [MeluXina Open OnDemand JupyterLab docs](https://docs.lxp.lu/web_services/open_ondemand/howtojlab/) 
 - [MeluXina Open OnDemand JupyterLab](https://docs.lxp.lu/web_services/open_ondemand/jlab_env/)
 
 
