@@ -11,11 +11,8 @@ This workshop introduces how **multimodal geospatial data** can be used together
 You will learn how satellite data from different sources (Sentinel-1, Sentinel-2, and DEM) can be:
 
 - discovered
-
 - aligned
-
 - transformed
-
 - and used for AI-based prediction
 
 ---
@@ -44,9 +41,7 @@ By the end of this workshop, you will:
 You will work through three notebooks:
 
 1. **Data Acquisition**: Search and select satellite data using STAC
-
 2. **Data Packaging**: Align and transform data into model-ready format
-
 3. **Model Inference**: Run TerraMind to detect flooded areas
 
 ---
@@ -64,7 +59,6 @@ A major focus of this workshop is understanding how **geospatial preprocessing e
 This workshop runs on:
 
 - **MeluXina GPU cluster**
-  
 - **Open OnDemand JupyterLab**
 
 No prior HPC experience is required.
@@ -76,9 +70,7 @@ No prior HPC experience is required.
 This workshop is designed for:
 
 - AI / ML practitioners interested in geospatial data
-  
 - Remote sensing / GIS experts exploring AI methods
-  
 - Researchers working with Earth observation data
 
 ---
@@ -88,9 +80,7 @@ This workshop is designed for:
 By the end, you will have:
 
 - Executed a complete **GeoAI pipeline**
-  
 - Understood how TerraMind works in practice
-  
 - Gained a reusable workflow for other EO applications
 
 ---
