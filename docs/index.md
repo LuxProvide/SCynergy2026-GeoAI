@@ -104,7 +104,7 @@ By the end, you will have:
 ## Resources
 
 - [TerraMind overview](https://ibm.github.io/terramind/)
-- [TerraTorch TerraMind guid](https://terrastackai.github.io/terratorch/1.2.6/guide/terramind/)
+- [TerraTorch TerraMind guide](https://terrastackai.github.io/terratorch/1.2.6/guide/terramind/)
 - [STAC / Planetary Computer tutorial](https://stacspec.org/en/tutorials/reading-stac-planetary-computer/) 
 - [Raster reprojection with Rasterio](https://rasterio.readthedocs.io/en/stable/topics/reproject.html) 
 - [Sen1Floods11 benchmark description](https://experts.arizona.edu/en/publications/sen1floods11-a-georeferenced-dataset-to-train-and-test-deep-learn/) 
