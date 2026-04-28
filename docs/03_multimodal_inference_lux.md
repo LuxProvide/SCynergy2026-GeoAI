@@ -16,7 +16,7 @@ flood / water masks alongside the input imagery.
 
 ### Prerequisites
 - Notebook 2 must have completed and written its output files to disk.
-- A GPU node must be allocated (check with `nvidia-smi`).
+- A **GPU** node must be allocated (check with `nvidia-smi`).
 
 ---
 
@@ -42,11 +42,15 @@ import pandas as pd
 import torch
 import matplotlib.pyplot as plt
 from terratorch.tasks import SemanticSegmentationTask
+from huggingface_hub import hf_hub_download
+
+import warnings
+warnings.filterwarnings('ignore')
 ```
 
 ### 2 · Configuration
 
-Adjust the two paths below if your files live elsewhere.
+Adjust the paths below if your files live elsewhere.
 Everything else is derived from what Notebook 2 saved.
 
 
@@ -54,7 +58,7 @@ Everything else is derived from what Notebook 2 saved.
 ```python
 # ── Model checkpoint ─────────────────────────────────────────────────────
 # Place the downloaded checkpoint file at this path before running.
-CKPT_PATH = "ckpt/TerraMind_v1_base_ImpactMesh_flood.pt"
+MODEL_PATH = "models/TerraMind_v1_base_ImpactMesh_flood.pt"
 
 # ── Data paths (must match Notebook 2 outputs) ────────────────────────────
 CHIP_CSV  = "./data/terramind_flood_lux/package/chip_manifest_multimodal.csv"
@@ -70,8 +74,31 @@ N_CHIPS_TO_SHOW    = 5
 MIN_WATER_FRACTION = 0.0   # show all water-containing chips if 0
 ```
 
-### 3 · Load the TerraMind model
+### 3 · Acquire and load the TerraMind model
 
+#### Downloading the TerraMind flood impact model
+This script below downloads the TerraMind flood impact model (`.pt` file) directly from a public Hugging Face repository and saves it to a local directory. It ensures the target path exists and uses Python’s standard library for a simple, reliable download without additional dependencies.
+
+
+```python
+hf_hub_download(
+    repo_id="ibm-esa-geospatial/TerraMind-base-Flood",
+    filename="TerraMind_v1_base_ImpactMesh_flood.pt",
+    local_dir="models",
+)
+```
+
+    2026-04-28 16:22:50,104 - INFO - HTTP Request: HEAD https://huggingface.co/ibm-esa-geospatial/TerraMind-base-Flood/resolve/main/TerraMind_v1_base_ImpactMesh_flood.pt "HTTP/1.1 302 Found"
+
+
+
+
+
+    'models/TerraMind_v1_base_ImpactMesh_flood.pt'
+
+
+
+#### Loading the TerraMind flood impact model
 `SemanticSegmentationTask` is a PyTorch Lightning wrapper around the TerraMind
 encoder + segmentation head. We load it from a checkpoint (`.pt` file) and
 immediately switch to evaluation mode.
@@ -82,13 +109,12 @@ immediately switch to evaluation mode.
 - `.eval()` — disables dropout and batch-normalisation updates.
 
 
-
 ```python
 print("Loading TerraMind model from checkpoint...")
 try:
     # strict=False tolerates minor mismatches between the saved checkpoint
     # and the installed terratorch version (e.g., extra logger config keys).
-    task  = SemanticSegmentationTask.load_from_checkpoint(CKPT_PATH, strict=False)
+    task  = SemanticSegmentationTask.load_from_checkpoint(MODEL_PATH, strict=True)
     model = task.model.cuda().eval()
     print("Model ready on GPU.")
 except Exception as err:
@@ -99,7 +125,7 @@ except Exception as err:
     Loading TerraMind model from checkpoint...
 
 
-    2026-04-15 08:39:47,713 - INFO - HTTP Request: HEAD https://huggingface.co/ibm-esa-geospatial/TerraMind-1.0-base/resolve/main/TerraMind_v1_base.pt "HTTP/1.1 302 Found"
+    2026-04-28 16:22:56,592 - INFO - HTTP Request: HEAD https://huggingface.co/ibm-esa-geospatial/TerraMind-1.0-base/resolve/main/TerraMind_v1_base.pt "HTTP/1.1 302 Found"
 
 
     Model ready on GPU.
@@ -436,7 +462,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](./images/output_14_1.png)
+![png](output_16_1.png)
     
 
 
@@ -446,7 +472,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](./images/output_14_3.png)
+![png](output_16_3.png)
     
 
 
@@ -456,7 +482,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](./images/output_14_5.png)
+![png](output_16_5.png)
     
 
 
@@ -466,7 +492,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](./images/output_14_7.png)
+![png](output_16_7.png)
     
 
 
@@ -476,7 +502,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](./images/output_14_9.png)
+![png](output_16_9.png)
     
 
 

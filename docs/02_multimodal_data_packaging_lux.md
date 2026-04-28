@@ -27,7 +27,6 @@ manifest JSON   ──►  download & reproject  ──►  full-scene arrays (.
 ### 1 · Imports
 
 Key packages:
-
 - **`rasterio`** — reads geospatial rasters and performs reprojection
 - **`numpy`** — array storage and manipulation
 - **`tqdm`** — progress bars for long downloads
@@ -55,6 +54,15 @@ from rasterio.transform import from_bounds
 from rasterio.warp import reproject
 from shapely.geometry import box
 from tqdm.auto import tqdm
+
+import os
+import shutil
+import zipfile
+import tempfile
+from urllib.request import urlretrieve
+
+import warnings
+warnings.filterwarnings('ignore')
 ```
 
 ### 2 · Configuration
@@ -145,6 +153,7 @@ def fetch_item(collection: str, item_id: str):
 
 def build_target_grid() -> dict:
     """Project the ROI bounding box to UTM and return grid metadata.
+
     Returns a dict with keys: crs, transform, width, height, bounds.
     The rasterio `transform` maps pixel coordinates to UTM coordinates.
     """
@@ -177,6 +186,10 @@ grid
 ```
 
     Analysis grid: 6033 × 8449 px  @ 10 m/px  (EPSG:32632)
+
+
+
+
 
     {'crs': 'EPSG:32632',
      'transform': Affine(np.float64(9.999522215554327), np.float64(0.0), np.float64(263209.339809777),
@@ -247,6 +260,7 @@ def phase_item(phase: str, modality: str):
 
 def load_s1_phase(phase: str) -> np.ndarray:
     """Download and reproject S1 VV + VH for one temporal phase.
+
     Returns shape: (2, H, W)  — channel dimension = [VV, VH].
     """
     item = phase_item(phase, "S1RTC")
@@ -257,6 +271,7 @@ def load_s1_phase(phase: str) -> np.ndarray:
 
 def load_s2_phase(phase: str) -> np.ndarray:
     """Download and reproject all 12 S2 bands for one temporal phase.
+
     Returns shape: (12, H, W)  — one slice per band in S2_BANDS order.
     """
     item = phase_item(phase, "S2L2A")
@@ -269,7 +284,9 @@ def load_s2_phase(phase: str) -> np.ndarray:
 
 def load_dem() -> np.ndarray:
     """Mosaic all DEM tiles covering the ROI and return a single elevation array.
+
     Multiple tiles are averaged over overlapping regions (nanmean).
+
     Returns shape: (1, H, W)  — single elevation channel.
     """
     dem_entries = manifest.get("dem_items", [])
@@ -315,6 +332,7 @@ DEM   : (C=1,       H, W)   — static (no time axis yet)
 ```python
 def save_full_scene_arrays(force: bool = False):
     """Download, reproject and stack all modalities; return memory-mapped arrays.
+
     If cached `.npy` files already exist and *force* is False, the files are
     memory-mapped (fast, zero-copy) rather than re-downloaded.
 
@@ -397,7 +415,23 @@ print(f"  DEM        : {dem_once.shape}  {dem_once.dtype}  (1 channel, H, W)")
 print(f"  valid_mask : {valid_mask.shape}  {valid_mask.dtype}  — {float(np.asarray(valid_mask).mean()):.1%} of pixels are valid")
 ```
 
-    Loaded cached full-scene arrays from disk.
+
+    Downloading S1RTC:   0%|          | 0/4 [00:00<?, ?it/s]
+
+
+
+    Downloading S2L2A:   0%|          | 0/4 [00:00<?, ?it/s]
+
+
+    Downloading DEM...
+
+
+
+    Loading DEM tiles:   0%|          | 0/4 [00:00<?, ?it/s]
+
+
+    DEM ready.
+    Full-scene arrays saved to disk.
     
     Array shapes and types:
       S1RTC      : (2, 4, 8449, 6033)  float32  (bands, time-steps, H, W)
@@ -406,26 +440,86 @@ print(f"  valid_mask : {valid_mask.shape}  {valid_mask.dtype}  — {float(np.asa
       valid_mask : (8449, 6033)  uint8  — 80.5% of pixels are valid
 
 
-### 6 · Load optional flood reference label *(Copernicus EMS)*
+### 6 · Acquire and load optional flood reference label *(Copernicus EMS)*
 
-The Copernicus Emergency Management Service (EMS) produced a vector flood
-delineation for the July 2021 event. If the geodatabase file
-`data/terramind_flood_lux/labels/EMSN139_STD_UTM32N_v01.gdb` is present, this cell
-rasterises the maximum flood extent onto the analysis grid and saves it as
-`luxembourg_label_max_flood.npy`.
+The Copernicus Emergency Management Service (EMS) produced a vector flood delineation for the July 2021 event. 
 
-If the file is absent the cell prints `None` and execution continues — the
-label is not required for inference, only for the optional visualisation below.
-
+#### Downloading 
+First, the script downloads a ZIP file from a URL, extracts it, and moves a specified `.gdb` (Esri File Geodatabase) directory to a target location. It uses a temporary workspace, safely overwrites existing data if needed, and cleans up intermediate files automatically.
 
 
 ```python
+URL = "https://mapping.emergency.copernicus.eu/download/EMSN139/EMSN139_STD_UTM32N_v01.gdb_.zip"
+TARGET_DIR = Path("data/terramind_flood_lux/labels")
+GDB_NAME = "EMSN139_STD_UTM32N_v01.gdb"
+
+def download_and_extract_gdb(url: str, target_dir: Path, gdb_name: str):
+    # Ensure the target directory exists
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Use a temporary directory for download and extraction
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = Path(tmpdir)
+
+        zip_path = tmpdir / "download.zip"
+        extract_dir = tmpdir / "extracted"
+
+        print("Downloading zip file...")
+        urlretrieve(url, zip_path)
+
+        print("Extracting zip file...")
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(extract_dir)
+
+        # Search recursively for the .gdb directory
+        gdb_path = None
+        for root, dirs, files in os.walk(extract_dir):
+            if gdb_name in dirs:
+                gdb_path = Path(root) / gdb_name
+                break
+
+        if gdb_path is None:
+            raise FileNotFoundError(f"{gdb_name} was not found in the extracted files")
+
+        destination = target_dir / gdb_name
+
+        # Remove existing destination directory if it already exists
+        if destination.exists():
+            shutil.rmtree(destination)
+
+        print("Moving .gdb directory to target location...")
+        shutil.move(str(gdb_path), destination)
+
+        print(f"Done. File moved to: {TARGET_DIR}/{GDB_NAME}")
+        
+
+if __name__ == "__main__":
+    download_and_extract_gdb(URL, TARGET_DIR, GDB_NAME)
+```
+
+    Downloading zip file...
+    Extracting zip file...
+    Moving .gdb directory to target location...
+    Done. File moved to: data/terramind_flood_lux/labels/EMSN139_STD_UTM32N_v01.gdb
+
+
+#### Rasterization
+
+Now, if the geodatabase (.gdb) file `data/terramind_flood_lux/labels/EMSN139_STD_UTM32N_v01.gdb` is present, this cell rasterises the maximum flood extent onto the analysis grid and saves it as `luxembourg_label_max_flood.npy`.
+
+If the file is absent the cell prints `None` and execution continues — the label is not required for inference, only for the optional visualisation below.
+
+
+```python
+FLOOD_GDB_PATH = TARGET_DIR/GDB_NAME
+
 def load_optional_ems_label():
     """Rasterise the Copernicus EMS flood layer if the geodatabase is on disk.
+
     Returns a uint8 array (H, W) with 1 = flooded, 0 = dry, or None if the
     file is not found.
     """
-    gdb_path = Path("data/terramind_flood_lux/labels/EMSN139_STD_UTM32N_v01.gdb")
+    gdb_path = Path(FLOOD_GDB_PATH)
     if not gdb_path.exists():
         print("EMS geodatabase not found — skipping label generation.")
         return None
@@ -483,6 +577,8 @@ print(
 )
 ```
 
+    Flood label saved  (P06TMFL01_MaxFloodExtent)
+      Flooded fraction : 1.342%
     flood_label: {'shape': (8449, 6033), 'positive_frac': 0.013422821030275804}
 
 
@@ -505,6 +601,7 @@ and quality metrics.
 ```python
 def build_chip_manifest(force: bool = False) -> pd.DataFrame:
     """Slide a window over the full scene and record valid chip locations.
+
     Returns a DataFrame with columns:
         chip_id, row0, row1, col0, col1, chip_valid_fraction, label_fraction
     """
@@ -573,7 +670,11 @@ print(f"Total valid chips : {len(chip_df)}")
 chip_df.head()
 ```
 
-    Loaded cached chip manifest (890 chips).
+
+    Indexing chips:   0%|          | 0/1120 [00:00<?, ?it/s]
+
+
+    Chip manifest saved: 890 valid chips → data/terramind_flood_lux/package/chip_manifest_multimodal.csv
     Total valid chips : 890
 
 
@@ -599,70 +700,64 @@ chip_df.head()
     <tr style="text-align: right;">
       <th></th>
       <th>chip_id</th>
-      <th>chip_path</th>
       <th>row0</th>
       <th>row1</th>
       <th>col0</th>
       <th>col1</th>
       <th>chip_valid_fraction</th>
-      <th>flood_fraction</th>
+      <th>label_fraction</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>lux_00000_00832</td>
-      <td>data/terramind_flood_lux/package/chips/lux_000...</td>
       <td>0</td>
       <td>256</td>
       <td>832</td>
       <td>1088</td>
       <td>0.987473</td>
-      <td>NaN</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>1</th>
       <td>lux_00000_01040</td>
-      <td>data/terramind_flood_lux/package/chips/lux_000...</td>
       <td>0</td>
       <td>256</td>
       <td>1040</td>
       <td>1296</td>
       <td>1.000000</td>
-      <td>NaN</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>2</th>
       <td>lux_00000_01248</td>
-      <td>data/terramind_flood_lux/package/chips/lux_000...</td>
       <td>0</td>
       <td>256</td>
       <td>1248</td>
       <td>1504</td>
       <td>1.000000</td>
-      <td>NaN</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>3</th>
       <td>lux_00000_01456</td>
-      <td>data/terramind_flood_lux/package/chips/lux_000...</td>
       <td>0</td>
       <td>256</td>
       <td>1456</td>
       <td>1712</td>
       <td>1.000000</td>
-      <td>NaN</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>4</th>
       <td>lux_00000_01664</td>
-      <td>data/terramind_flood_lux/package/chips/lux_000...</td>
       <td>0</td>
       <td>256</td>
       <td>1664</td>
       <td>1920</td>
       <td>1.000000</td>
-      <td>NaN</td>
+      <td>0.0</td>
     </tr>
   </tbody>
 </table>
@@ -744,7 +839,7 @@ print(f"Valid pixel fraction (all modalities): {float(valid.mean()):.1%}")
 
 
     
-![png](./images/output_16_0.png)
+![png](output_18_0.png)
     
 
 
@@ -765,6 +860,7 @@ Columns: **S2 RGB · S1 VV (dB) · S1 VH (dB) · DEM · valid mask**
 def linear_stretch(array: np.ndarray, mask: np.ndarray | None = None,
                    p_low: float = 2, p_high: float = 98) -> np.ndarray:
     """Stretch array values to [0, 1] using percentile clipping.
+
     Useful for visualising images with very different dynamic ranges.
     """
     array = array.astype("float32")
@@ -843,6 +939,6 @@ plt.show()
 
 
     
-![png](./images/output_18_0.png)
+![png](output_20_0.png)
     
 

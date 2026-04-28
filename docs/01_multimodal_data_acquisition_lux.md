@@ -21,7 +21,6 @@ the data without re-querying the catalogue.
 ### 1 · Imports
 
 We use:
-
 - **`pystac_client`** — Python client for querying STAC catalogues
 - **`planetary_computer`** — signs asset URLs so they are temporarily downloadable
 - **`geopandas` / `shapely`** — work with geographic geometries
@@ -42,6 +41,9 @@ import planetary_computer
 import pystac_client
 from shapely.geometry import box, shape
 import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings('ignore')
 ```
 
 ### 2 · Configuration
@@ -170,8 +172,9 @@ admin_gdf.plot(ax=ax, color='white', edgecolor='black')
 plt.show()
 ```
 
+
     
-![png](./images/output_6_1.png)
+![png](output_6_0.png)
     
 
 
