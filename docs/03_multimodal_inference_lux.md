@@ -462,7 +462,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](output_16_1.png)
+![png](images/output_16_1.png)
     
 
 
@@ -472,7 +472,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](output_16_3.png)
+![png](images/output_16_3.png)
     
 
 
@@ -482,7 +482,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](output_16_5.png)
+![png](images/output_16_5.png)
     
 
 
@@ -492,7 +492,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](output_16_7.png)
+![png](images/output_16_7.png)
     
 
 
@@ -502,7 +502,7 @@ for _, chip_row in water_chips.iterrows():
 
 
     
-![png](output_16_9.png)
+![png](images/output_16_9.png)
     
 
 

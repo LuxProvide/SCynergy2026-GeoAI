@@ -839,7 +839,7 @@ print(f"Valid pixel fraction (all modalities): {float(valid.mean()):.1%}")
 
 
     
-![png](output_18_0.png)
+![png](images/output_18_0.png)
     
 
 
@@ -939,6 +939,6 @@ plt.show()
 
 
     
-![png](output_20_0.png)
+![png](images/output_20_0.png)
     
 
