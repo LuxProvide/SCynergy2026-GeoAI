@@ -44,16 +44,30 @@ plugins:
 extra_css:
   - stylesheets/extra.css
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+#  - https://unpkg.com/katex@0/dist/katex.min.css
+# - stylesheets/bootstrap.min.css
 
 # Extra javascript
 extra_javascript:
   - javascripts/extra.js
   - javascripts/bootstrap.min.js
+  #- https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js
+  # https://squidfunk.github.io/mkdocs-material/reference/data-tables/#sortable-tables
   - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
   - javascripts/tables.js
   - javascripts/katex.js
   - https://unpkg.com/katex@0/dist/katex.min.js
   - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+  #- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js  
+  #- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+#  - https://unpkg.com/katex@0/dist/katex.min.js
+#  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+
+#  - javascripts/mathjax.js
+#  - https://polyfill.io/v3/polyfill.min.js?features=es6
+#  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
 
 # Extensions
 markdown_extensions:
