@@ -75,7 +75,7 @@ By the end of this workshop, participants will be able to:
     ├── overrides/          # MkDocs theme overrides
     ├── .github/workflows/  # CI workflow for documentation deployment
     ├── mkdocs.yml          # MkDocs configuration
-    ├── requirements.txt    # Python dependencies
+    ├── requirements.txt    
     ├── LICENSE            
     └── README.md
 
