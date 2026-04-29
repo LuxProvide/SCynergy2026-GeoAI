@@ -9,7 +9,7 @@ nav:
   - Notebook 01 Acquisition: '01_multimodal_data_acquisition_lux.md'
   - Notebook 02 Packaging: '02_multimodal_data_packaging_lux.md'
   - Notebook 03 Inference: '03_multimodal_inference_lux.md'
-  - (Optional) Notebook 04 IBM Fine-Tuning: '04_terramind_v1_small_sen1floods11.md'
+  - Notebook 04 IBM Fine-Tuning (Optional): '04_terramind_v1_small_sen1floods11.md'
 
 site_description: A tutorial on how to fine-tune a geospatial foundation model (GeoFMs) on MeluXina (GPU)
 site_author: Eun-Kyeong Kim
