@@ -31,19 +31,19 @@ By the end of this workshop, you will:
 
 ## Workshop Structure
 
-### Part 1 — Concepts (20 minutes)
+### Part 1 — Concepts (20 minutes) - [Presentation Slides (.pdf)](https://github.com/LuxProvide/SCynergy2026-GeoAI/tree/main/hands-on/SCynergy2026-GeoAI-slides.pdf)
 * GeoAI and multimodal Earth observation
 * TerraMind foundation model
 * Geospatial data concepts (raster, reprojection, alignment)
 * End-to-end workflow overview
 
-### Part 2 — Hands-on (60 minutes)
-You will work through three notebooks:
+### Part 2 — Hands-on (60 minutes) - [Learning Materials (notebooks)](https://github.com/LuxProvide/SCynergy2026-GeoAI/tree/main/hands-on)
+You will work through three notebooks and one optional notebook:
 
 1. **Data Acquisition**: Search and select satellite data using STAC
 2. **Data Packaging**: Align and transform data into model-ready format
 3. **Model Inference**: Run TerraMind to detect flooded areas
-
+4. (Optional) **Fine-Tuning**: IBM Tutorial - Fine-tune existing TerraMind models with Sen1Floods11 dataset 
 ---
 
 ## Key Idea
