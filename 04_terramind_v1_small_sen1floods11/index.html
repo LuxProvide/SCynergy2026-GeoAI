@@ -1,0 +1,1448 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A tutorial on how to fine-tune a geospatial foundation model (GeoFMs) on MeluXina (GPU)">
+      
+      
+        <meta name="author" content="Eun-Kyeong Kim">
+      
+      
+        <link rel="canonical" href="https://LuxProvide.github.io/SCynergy2026-GeoAI/04_terramind_v1_small_sen1floods11/">
+      
+      
+        <link rel="prev" href="../03_multimodal_inference_lux/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Notebook 04 IBM Fine-Tuning (Optional) - SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#notebook-4-optional-ibm-terramind-tutorial-fine-tune-terramind-with-sen1floods11-dataset" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics" class="md-header__button md-logo" aria-label="SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics" data-md-component="logo">
+      
+  <img src="../assets/LuxProvide_logo_white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Notebook 04 IBM Fine-Tuning (Optional)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics" class="md-nav__button md-logo" aria-label="SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics" data-md-component="logo">
+      
+  <img src="../assets/LuxProvide_logo_white.svg" alt="logo">
+
+    </a>
+    SCynergy 2026 - Operational GeoAI for Scalable Satellite Analytics
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../worksheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Worksheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cheat_sheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cheat Sheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connect_meluxina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connecting to MeluXina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_multimodal_data_acquisition_lux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook 01 Acquisition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_multimodal_data_packaging_lux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook 02 Packaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_multimodal_inference_lux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook 03 Inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook 04 IBM Fine-Tuning (Optional)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook 04 IBM Fine-Tuning (Optional)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sources:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fine-tuning-via-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fine-tuning via CLI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fine-tuning via CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sen1floods11-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sen1Floods11 Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terratorch-model-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TerraTorch model registry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fine-tune-terramind-via-pytorch-lightning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fine-tune TerraMind via PyTorch Lightning
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+
+
+
+                  
+
+
+
+<h1 id="notebook-4-optional-ibm-terramind-tutorial-fine-tune-terramind-with-sen1floods11-dataset">Notebook 4 (Optional) — IBM TerraMind Tutorial: Fine-tune TerraMind with Sen1Floods11 Dataset<a class="headerlink" href="#notebook-4-optional-ibm-terramind-tutorial-fine-tune-terramind-with-sen1floods11-dataset" title="Permanent link">&para;</a></h1>
+<p>Eun-Kyeong Kim (<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#101;&#117;&#110;&#45;&#107;&#121;&#101;&#111;&#110;&#103;&#46;&#107;&#105;&#109;&#64;&#108;&#120;&#112;&#46;&#108;&#117;">&#101;&#117;&#110;&#45;&#107;&#121;&#101;&#111;&#110;&#103;&#46;&#107;&#105;&#109;&#64;&#108;&#120;&#112;&#46;&#108;&#117;</a>, LuxProvide S.A) edited the original notebook provided by IBM to adapt it to up-to-date versions of dependencies.</p>
+<h2 id="sources">Sources:<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Original Notebook: <a href="https://github.com/IBM/terramind/blob/main/notebooks%2Fterramind_v1_small_sen1floods11.ipynb">https://github.com/IBM/terramind/blob/main/notebooks%2Fterramind_v1_small_sen1floods11.ipynb</a> </li>
+<li>GitHub repository: <a href="https://github.com/IBM/terramind">https://github.com/IBM/terramind</a></li>
+</ul>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Use GPU or TPU node(s).</li>
+<li>Install TerraTorch</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">setuptools</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">gdown</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">terratorch</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">albumentations</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lightning.pytorch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="kn">from</span><span class="w"> </span><span class="nn">terratorch.datamodules</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericNonGeoSegmentationDataModule</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<ol>
+<li>Download the dataset from Google Drive</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;sen1floods11_v1.1.tar.gz&quot;</span><span class="p">):</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">gdown</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;https://drive.google.com/uc?id=1lRw3X7oFNq_WyzBO6uyUJijyTuYm23VS&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                   <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sen1floods11_v1.1.tar.gz&quot;</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                   <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="err">!</span><span class="n">tar</span> <span class="o">-</span><span class="n">xzf</span> <span class="n">sen1floods11_v1</span><span class="mf">.1</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span> 
+</span></code></pre></div>
+<h2 id="fine-tuning-via-cli">Fine-tuning via CLI<a class="headerlink" href="#fine-tuning-via-cli" title="Permanent link">&para;</a></h2>
+<p>Fine-tune TerraMind with only a config file!</p>
+<p>Locally, run the fine-tuning command in your terminal rather than in this notebook.
+(For Macbook users: Error with MPS and some macOS version, fix <a href="https://github.com/terrastackai/terratorch/issues/859">https://github.com/terrastackai/terratorch/issues/859</a>)</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Download config</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;terramind_v1_tiny_sen1floods11.yaml&quot;</span><span class="p">):</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="err">!</span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">IBM</span><span class="o">/</span><span class="n">terramind</span><span class="o">/</span><span class="n">refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">configs</span><span class="o">/</span><span class="n">terramind_v1_tiny_sen1floods11</span><span class="o">.</span><span class="n">yaml</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Check the config</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="err">!</span><span class="n">cat</span> <span class="n">terramind_v1_tiny_sen1floods11</span><span class="o">.</span><span class="n">yaml</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="gh">#</span> lightning.pytorch==2.1.1
+seed_everything: 42
+trainer:
+  accelerator: auto
+  strategy: auto
+  devices: auto
+  num_nodes: 1
+  precision: 16-mixed
+  logger: true
+  callbacks:
+    <span class="k">-</span> class_path: RichProgressBar
+    <span class="k">-</span> class_path: LearningRateMonitor
+      init_args:
+        logging_interval: epoch
+  max_epochs: 100
+  log_every_n_steps: 5
+  default_root_dir: output/terramind_tiny_sen1floods11/
+
+data:
+  class_path: terratorch.datamodules.GenericMultiModalDataModule
+  init_args:
+    task: &#39;segmentation&#39;
+    batch_size: 8
+    num_workers: 4
+    modalities:
+      <span class="k">-</span> S2L1C
+      <span class="k">-</span> S1GRD
+    rgb_modality: S2L1C
+    rgb_indices:
+      <span class="k">-</span> 3
+      <span class="k">-</span> 2
+      <span class="k">-</span> 1
+    train_data_root:
+      S2L1C: sen1floods11_v1.1/data/S2L1CHand
+      S1GRD: sen1floods11_v1.1/data/S1GRDHand
+    train_label_data_root: sen1floods11_v1.1/data/LabelHand
+    val_data_root:
+      S2L1C: sen1floods11_v1.1/data/S2L1CHand
+      S1GRD: sen1floods11_v1.1/data/S1GRDHand
+    val_label_data_root: sen1floods11_v1.1/data/LabelHand
+    test_data_root:
+      S2L1C: sen1floods11_v1.1/data/S2L1CHand
+      S1GRD: sen1floods11_v1.1/data/S1GRDHand
+    test_label_data_root: sen1floods11_v1.1/data/LabelHand
+
+    train_split: sen1floods11_v1.1/splits/flood_train_data.txt
+    val_split: sen1floods11_v1.1/splits/flood_valid_data.txt
+    test_split: sen1floods11_v1.1/splits/flood_test_data.txt
+
+    # Adjust file suffixes if required or delete them
+    image_grep:
+      S2L1C: &quot;*_S2Hand.tif&quot;
+      S1GRD: &quot;*_S1Hand.tif&quot;
+    label_grep: &quot;*_LabelHand.tif&quot;
+
+    no_label_replace: -1
+    no_data_replace: 0
+    num_classes: 2
+
+    # TerraMind standardization values
+    means:
+      S2L1C: [2357.089, 2137.385, 2018.788, 2082.986, 2295.651, 2854.537, 3122.849, 3040.560, 3306.481, 1473.847, 506.070, 2472.825, 1838.929]
+      S2L2A: [1390.458, 1503.317, 1718.197, 1853.910, 2199.100, 2779.975, 2987.011, 3083.234, 3132.220, 3162.988, 2424.884, 1857.648]
+      S1GRD: [-12.599, -20.293]
+      S1RTC: [-10.93, -17.329]
+      RGB: [87.271, 80.931, 66.667]
+      DEM: [670.665]
+
+    stds:
+      S2L1C: [1624.683, 1675.806, 1557.708, 1833.702, 1823.738, 1733.977, 1732.131, 1679.732, 1727.26, 1024.687, 442.165, 1331.411, 1160.419]
+      S2L2A: [2106.761, 2141.107, 2038.973, 2134.138, 2085.321, 1889.926, 1820.257, 1871.918, 1753.829, 1797.379, 1434.261, 1334.311]
+      S1GRD: [5.195, 5.890]
+      S1RTC: [4.391, 4.459]
+      RGB: [58.767, 47.663, 42.631]
+      DEM: [951.272]
+
+    train_transform:
+      <span class="k">-</span> class_path: albumentations.D4  # Random flip and rotations
+      <span class="k">-</span> class_path: albumentations.pytorch.transforms.ToTensorV2
+
+model:
+  class_path: terratorch.tasks.SemanticSegmentationTask
+  init_args:
+    model_factory: EncoderDecoderFactory
+    model_args:
+      backbone: terramind_v1_tiny
+      backbone_pretrained: true
+      backbone_modalities:
+        <span class="k">-</span> S2L1C
+        <span class="k">-</span> S1GRD
+      backbone_merge_method: mean
+
+      necks:
+        <span class="k">-</span> name: SelectIndices
+          indices: [2, 5, 8, 11]  # tiny, small, or base version
+<span class="gh">#</span>          indices: [5, 11, 17, 23]  # large version
+        <span class="k">-</span> name: ReshapeTokensToImage
+          remove_cls_token: False
+        <span class="k">-</span> name: LearnedInterpolateToPyramidal
+
+      decoder: UNetDecoder
+      decoder_channels: [256, 128, 64, 32]
+
+      head_dropout: 0.1
+      num_classes: 2
+    loss: dice
+    ignore_index: -1
+    freeze_backbone: true
+    freeze_decoder: false
+    class_names:
+      <span class="k">-</span> Others
+      <span class="k">-</span> Flood
+
+optimizer:
+  class_path: torch.optim.AdamW
+  init_args:
+    lr: 2.e-5
+lr_scheduler:
+  class_path: ReduceLROnPlateau
+  init_args:
+    monitor: val/loss
+    factor: 0.5
+    patience: 5
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Run fine-tuning</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># It takes a while. To see the progress and logs, check fine-tuning.log</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="err">!</span><span class="n">terratorch</span> <span class="n">fit</span> <span class="o">-</span><span class="n">c</span> <span class="n">terramind_v1_tiny_sen1floods11</span><span class="o">.</span><span class="n">yaml</span> <span class="o">&gt;</span> <span class="n">fine</span><span class="o">-</span><span class="n">tuning</span><span class="o">.</span><span class="n">log</span> <span class="mi">2</span><span class="o">&gt;&amp;</span><span class="mi">1</span>
+</span></code></pre></div>
+<p>Let's explore the different settings of the config in a bit more detail ...</p>
+<h3 id="sen1floods11-dataset">Sen1Floods11 Dataset<a class="headerlink" href="#sen1floods11-dataset" title="Permanent link">&para;</a></h3>
+<p>Lets start with analysing the dataset</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">dataset_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;sen1floods11_v1.1&quot;</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="err">!</span><span class="n">ls</span> <span class="s2">&quot;sen1floods11_v1.1/data&quot;</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>CopernicusDEM  JRCWaterHand  LabelHand  S1GRDHand  S1OtsuLabelHand  S2L1CHand
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="err">!</span><span class="n">ls</span> <span class="s2">&quot;sen1floods11_v1.1/data/S2L1CHand/&quot;</span> <span class="o">|</span> <span class="n">head</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>Bolivia_103757_S2Hand.tif
+Bolivia_129334_S2Hand.tif
+Bolivia_195474_S2Hand.tif
+Bolivia_23014_S2Hand.tif
+Bolivia_233925_S2Hand.tif
+Bolivia_242570_S2Hand.tif
+Bolivia_290290_S2Hand.tif
+Bolivia_294583_S2Hand.tif
+Bolivia_312675_S2Hand.tif
+Bolivia_314919_S2Hand.tif
+</code></pre></div>
+
+<p>TerraTorch provides generic data modules that work directly with PyTorch Lightning.</p>
+<p>Sen1Floods11 is a multimodal dataset that provides Sentinel-2 L2A and Sentinel-1 GRD data. 
+Therefore, we are using the <code>GenericMultiModalDataModule</code>. 
+This module is similar to the <code>GenericNonGeoSegmentationDataModule</code>, which is used for standard segmentation tasks.
+However, the data roots, <code>img_grep</code> are other settings are provided as dict to account for the multimodal inputs. You find all settings in the <a href="https://terrastackai.github.io/terratorch/stable/generic_datamodules/">documentation</a>.
+In a Lightning config, the data module is defined with the <code>data</code> key.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">datamodule</span> <span class="o">=</span> <span class="n">terratorch</span><span class="o">.</span><span class="n">datamodules</span><span class="o">.</span><span class="n">GenericMultiModalDataModule</span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">task</span><span class="o">=</span><span class="s2">&quot;segmentation&quot;</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="c1"># Define your input modalities. The names must match the keys in the following dicts.</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">modalities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">,</span> <span class="s2">&quot;S1GRD&quot;</span><span class="p">],</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">rgb_indices</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="p">},</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    <span class="c1"># Define data paths as dicts using the modality names as keys.</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    <span class="n">train_data_root</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S2L1CHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S1GRDHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    <span class="p">},</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    <span class="n">train_label_data_root</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/LabelHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="n">val_data_root</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S2L1CHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S1GRDHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>    <span class="p">},</span>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>    <span class="n">val_label_data_root</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/LabelHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>    <span class="n">test_data_root</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S2L1CHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/S1GRDHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>    <span class="p">},</span>
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>    <span class="n">test_label_data_root</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;data/LabelHand&quot;</span><span class="p">,</span>
+</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>
+</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>    <span class="c1"># Define split files because all samples are saved in the same folder.</span>
+</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>    <span class="n">train_split</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;splits/flood_train_data.txt&quot;</span><span class="p">,</span>
+</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>    <span class="n">val_split</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;splits/flood_valid_data.txt&quot;</span><span class="p">,</span>
+</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>    <span class="n">test_split</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;splits/flood_test_data.txt&quot;</span><span class="p">,</span>
+</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a>
+</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a>    <span class="c1"># Define suffix, again using dicts.</span>
+</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a>    <span class="n">image_grep</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="s2">&quot;*_S2Hand.tif&quot;</span><span class="p">,</span>
+</span><span id="__span-7-39"><a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="s2">&quot;*_S1Hand.tif&quot;</span><span class="p">,</span>
+</span><span id="__span-7-40"><a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a>    <span class="p">},</span>
+</span><span id="__span-7-41"><a id="__codelineno-7-41" name="__codelineno-7-41" href="#__codelineno-7-41"></a>    <span class="n">label_grep</span><span class="o">=</span><span class="s2">&quot;*_LabelHand.tif&quot;</span><span class="p">,</span>
+</span><span id="__span-7-42"><a id="__codelineno-7-42" name="__codelineno-7-42" href="#__codelineno-7-42"></a>
+</span><span id="__span-7-43"><a id="__codelineno-7-43" name="__codelineno-7-43" href="#__codelineno-7-43"></a>    <span class="c1"># With TerraTorch, you can select a subset of the dataset bands as model inputs by providing dataset_bands (all bands in the data) and output_bands (selected bands). This setting is optional for all modalities and needs to be provided as dicts.</span>
+</span><span id="__span-7-44"><a id="__codelineno-7-44" name="__codelineno-7-44" href="#__codelineno-7-44"></a>    <span class="c1"># Here is an example for with S-1 GRD. You could change the output to [&quot;VV&quot;] to only train on the first band. Note that means and stds must be aligned with the output_bands (equal length of values). </span>
+</span><span id="__span-7-45"><a id="__codelineno-7-45" name="__codelineno-7-45" href="#__codelineno-7-45"></a>    <span class="n">dataset_bands</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-46"><a id="__codelineno-7-46" name="__codelineno-7-46" href="#__codelineno-7-46"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;VV&quot;</span><span class="p">,</span> <span class="s2">&quot;VH&quot;</span><span class="p">]</span>
+</span><span id="__span-7-47"><a id="__codelineno-7-47" name="__codelineno-7-47" href="#__codelineno-7-47"></a>    <span class="p">},</span>
+</span><span id="__span-7-48"><a id="__codelineno-7-48" name="__codelineno-7-48" href="#__codelineno-7-48"></a>    <span class="n">output_bands</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-49"><a id="__codelineno-7-49" name="__codelineno-7-49" href="#__codelineno-7-49"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;VV&quot;</span><span class="p">,</span> <span class="s2">&quot;VH&quot;</span><span class="p">]</span>
+</span><span id="__span-7-50"><a id="__codelineno-7-50" name="__codelineno-7-50" href="#__codelineno-7-50"></a>    <span class="p">},</span>
+</span><span id="__span-7-51"><a id="__codelineno-7-51" name="__codelineno-7-51" href="#__codelineno-7-51"></a>
+</span><span id="__span-7-52"><a id="__codelineno-7-52" name="__codelineno-7-52" href="#__codelineno-7-52"></a>    <span class="c1"># Define standardization values. We use the pre-training values here and providing the additional modalities is not a problem, which makes it simple to experiment with different modality combinations. Alternatively, use the dataset statistics that you can generate using `terratorch compute_statistics -c config.yaml` (requires concat_bands: true for this multimodal datamodule).</span>
+</span><span id="__span-7-53"><a id="__codelineno-7-53" name="__codelineno-7-53" href="#__codelineno-7-53"></a>    <span class="n">means</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-54"><a id="__codelineno-7-54" name="__codelineno-7-54" href="#__codelineno-7-54"></a>      <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">2357.089</span><span class="p">,</span> <span class="mf">2137.385</span><span class="p">,</span> <span class="mf">2018.788</span><span class="p">,</span> <span class="mf">2082.986</span><span class="p">,</span> <span class="mf">2295.651</span><span class="p">,</span> <span class="mf">2854.537</span><span class="p">,</span> <span class="mf">3122.849</span><span class="p">,</span> <span class="mf">3040.560</span><span class="p">,</span> <span class="mf">3306.481</span><span class="p">,</span> <span class="mf">1473.847</span><span class="p">,</span> <span class="mf">506.070</span><span class="p">,</span> <span class="mf">2472.825</span><span class="p">,</span> <span class="mf">1838.929</span><span class="p">],</span>
+</span><span id="__span-7-55"><a id="__codelineno-7-55" name="__codelineno-7-55" href="#__codelineno-7-55"></a>      <span class="s2">&quot;S2L2A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1390.458</span><span class="p">,</span> <span class="mf">1503.317</span><span class="p">,</span> <span class="mf">1718.197</span><span class="p">,</span> <span class="mf">1853.910</span><span class="p">,</span> <span class="mf">2199.100</span><span class="p">,</span> <span class="mf">2779.975</span><span class="p">,</span> <span class="mf">2987.011</span><span class="p">,</span> <span class="mf">3083.234</span><span class="p">,</span> <span class="mf">3132.220</span><span class="p">,</span> <span class="mf">3162.988</span><span class="p">,</span> <span class="mf">2424.884</span><span class="p">,</span> <span class="mf">1857.648</span><span class="p">],</span>
+</span><span id="__span-7-56"><a id="__codelineno-7-56" name="__codelineno-7-56" href="#__codelineno-7-56"></a>      <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">12.599</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.293</span><span class="p">],</span>
+</span><span id="__span-7-57"><a id="__codelineno-7-57" name="__codelineno-7-57" href="#__codelineno-7-57"></a>      <span class="s2">&quot;S1RTC&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.93</span><span class="p">,</span> <span class="o">-</span><span class="mf">17.329</span><span class="p">],</span>
+</span><span id="__span-7-58"><a id="__codelineno-7-58" name="__codelineno-7-58" href="#__codelineno-7-58"></a>      <span class="s2">&quot;RGB&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">87.271</span><span class="p">,</span> <span class="mf">80.931</span><span class="p">,</span> <span class="mf">66.667</span><span class="p">],</span>
+</span><span id="__span-7-59"><a id="__codelineno-7-59" name="__codelineno-7-59" href="#__codelineno-7-59"></a>      <span class="s2">&quot;DEM&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">670.665</span><span class="p">]</span>
+</span><span id="__span-7-60"><a id="__codelineno-7-60" name="__codelineno-7-60" href="#__codelineno-7-60"></a>    <span class="p">},</span>
+</span><span id="__span-7-61"><a id="__codelineno-7-61" name="__codelineno-7-61" href="#__codelineno-7-61"></a>    <span class="n">stds</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-7-62"><a id="__codelineno-7-62" name="__codelineno-7-62" href="#__codelineno-7-62"></a>      <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1624.683</span><span class="p">,</span> <span class="mf">1675.806</span><span class="p">,</span> <span class="mf">1557.708</span><span class="p">,</span> <span class="mf">1833.702</span><span class="p">,</span> <span class="mf">1823.738</span><span class="p">,</span> <span class="mf">1733.977</span><span class="p">,</span> <span class="mf">1732.131</span><span class="p">,</span> <span class="mf">1679.732</span><span class="p">,</span> <span class="mf">1727.26</span><span class="p">,</span> <span class="mf">1024.687</span><span class="p">,</span> <span class="mf">442.165</span><span class="p">,</span> <span class="mf">1331.411</span><span class="p">,</span> <span class="mf">1160.419</span><span class="p">],</span>
+</span><span id="__span-7-63"><a id="__codelineno-7-63" name="__codelineno-7-63" href="#__codelineno-7-63"></a>      <span class="s2">&quot;S2L2A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">2106.761</span><span class="p">,</span> <span class="mf">2141.107</span><span class="p">,</span> <span class="mf">2038.973</span><span class="p">,</span> <span class="mf">2134.138</span><span class="p">,</span> <span class="mf">2085.321</span><span class="p">,</span> <span class="mf">1889.926</span><span class="p">,</span> <span class="mf">1820.257</span><span class="p">,</span> <span class="mf">1871.918</span><span class="p">,</span> <span class="mf">1753.829</span><span class="p">,</span> <span class="mf">1797.379</span><span class="p">,</span> <span class="mf">1434.261</span><span class="p">,</span> <span class="mf">1334.311</span><span class="p">],</span>
+</span><span id="__span-7-64"><a id="__codelineno-7-64" name="__codelineno-7-64" href="#__codelineno-7-64"></a>      <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.195</span><span class="p">,</span> <span class="mf">5.890</span><span class="p">],</span>
+</span><span id="__span-7-65"><a id="__codelineno-7-65" name="__codelineno-7-65" href="#__codelineno-7-65"></a>      <span class="s2">&quot;S1RTC&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.391</span><span class="p">,</span> <span class="mf">4.459</span><span class="p">],</span>
+</span><span id="__span-7-66"><a id="__codelineno-7-66" name="__codelineno-7-66" href="#__codelineno-7-66"></a>      <span class="s2">&quot;RGB&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">58.767</span><span class="p">,</span> <span class="mf">47.663</span><span class="p">,</span> <span class="mf">42.631</span><span class="p">],</span>
+</span><span id="__span-7-67"><a id="__codelineno-7-67" name="__codelineno-7-67" href="#__codelineno-7-67"></a>      <span class="s2">&quot;DEM&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">951.272</span><span class="p">],</span>
+</span><span id="__span-7-68"><a id="__codelineno-7-68" name="__codelineno-7-68" href="#__codelineno-7-68"></a>    <span class="p">},</span>
+</span><span id="__span-7-69"><a id="__codelineno-7-69" name="__codelineno-7-69" href="#__codelineno-7-69"></a>
+</span><span id="__span-7-70"><a id="__codelineno-7-70" name="__codelineno-7-70" href="#__codelineno-7-70"></a>        <span class="c1"># albumentations supports shared transformations and can handle multimodal inputs. </span>
+</span><span id="__span-7-71"><a id="__codelineno-7-71" name="__codelineno-7-71" href="#__codelineno-7-71"></a>    <span class="n">train_transform</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-7-72"><a id="__codelineno-7-72" name="__codelineno-7-72" href="#__codelineno-7-72"></a>        <span class="n">albumentations</span><span class="o">.</span><span class="n">D4</span><span class="p">(),</span> <span class="c1"># Random flips and rotation</span>
+</span><span id="__span-7-73"><a id="__codelineno-7-73" name="__codelineno-7-73" href="#__codelineno-7-73"></a>        <span class="n">albumentations</span><span class="o">.</span><span class="n">pytorch</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensorV2</span><span class="p">(),</span>
+</span><span id="__span-7-74"><a id="__codelineno-7-74" name="__codelineno-7-74" href="#__codelineno-7-74"></a>    <span class="p">],</span>
+</span><span id="__span-7-75"><a id="__codelineno-7-75" name="__codelineno-7-75" href="#__codelineno-7-75"></a>    <span class="n">val_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Using ToTensorV2() by default if not provided</span>
+</span><span id="__span-7-76"><a id="__codelineno-7-76" name="__codelineno-7-76" href="#__codelineno-7-76"></a>    <span class="n">test_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-7-77"><a id="__codelineno-7-77" name="__codelineno-7-77" href="#__codelineno-7-77"></a>
+</span><span id="__span-7-78"><a id="__codelineno-7-78" name="__codelineno-7-78" href="#__codelineno-7-78"></a>    <span class="n">no_label_replace</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Replace NaN labels. defaults to -1 which is ignored in the loss and metrics.</span>
+</span><span id="__span-7-79"><a id="__codelineno-7-79" name="__codelineno-7-79" href="#__codelineno-7-79"></a>    <span class="n">no_data_replace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># Replace NaN data</span>
+</span><span id="__span-7-80"><a id="__codelineno-7-80" name="__codelineno-7-80" href="#__codelineno-7-80"></a>    <span class="n">check_stackability</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># Set to True if you are uncertain if all samples have the same input shape</span>
+</span><span id="__span-7-81"><a id="__codelineno-7-81" name="__codelineno-7-81" href="#__codelineno-7-81"></a><span class="p">)</span>
+</span><span id="__span-7-82"><a id="__codelineno-7-82" name="__codelineno-7-82" href="#__codelineno-7-82"></a>
+</span><span id="__span-7-83"><a id="__codelineno-7-83" name="__codelineno-7-83" href="#__codelineno-7-83"></a><span class="c1"># Setup train and val datasets</span>
+</span><span id="__span-7-84"><a id="__codelineno-7-84" name="__codelineno-7-84" href="#__codelineno-7-84"></a><span class="n">datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s2">&quot;fit&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">58</span><span class="p">:</span><span class="mf">59</span><span class="p">,</span><span class="mf">568</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Train</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">252</span>
+<span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">58</span><span class="p">:</span><span class="mf">59</span><span class="p">,</span><span class="mf">659</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">Val</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">89</span>
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># checking datasets validation split size</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">datamodule</span><span class="o">.</span><span class="n">val_dataset</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">len</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">89</span>
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>{&#39;mask&#39;: tensor([[1, 1, 1,  ..., 0, 0, 0],
+        [1, 1, 1,  ..., 0, 0, 0],
+        [1, 1, 1,  ..., 0, 0, 0],
+        ...,
+        [1, 1, 1,  ..., 1, 1, 0],
+        [1, 1, 1,  ..., 1, 1, 1],
+        [0, 0, 1,  ..., 1, 1, 1]]), &#39;image&#39;: {&#39;S2L1C&#39;: tensor([[[2065., 2065., 2065.,  ..., 1454., 1455., 1455.],
+         [2065., 2065., 2065.,  ..., 1469., 1468., 1468.],
+         [2065., 2065., 2065.,  ..., 1469., 1468., 1468.],
+         ...,
+         [1717., 1717., 1742.,  ..., 1693., 1693., 1693.],
+         [1717., 1717., 1742.,  ..., 1693., 1693., 1693.],
+         [1683., 1683., 1732.,  ..., 1693., 1693., 1693.]],
+
+        [[1846., 1889., 1906.,  ..., 1200., 1190., 1197.],
+         [1856., 1883., 1899.,  ..., 1187., 1191., 1173.],
+         [1908., 1904., 1911.,  ..., 1181., 1176., 1186.],
+         ...,
+         [1500., 1500., 1632.,  ..., 1509., 1510., 1542.],
+         [1458., 1458., 1595.,  ..., 1494., 1541., 1551.],
+         [1412., 1412., 1504.,  ..., 1502., 1509., 1496.]],
+
+        [[1938., 1954., 2031.,  ..., 1118., 1107., 1089.],
+         [1986., 1971., 2039.,  ..., 1107., 1095., 1082.],
+         [2055., 2017., 2050.,  ..., 1106., 1097., 1080.],
+         ...,
+         [1624., 1624., 1767.,  ..., 1419., 1409., 1427.],
+         [1493., 1493., 1697.,  ..., 1418., 1407., 1431.],
+         [1477., 1477., 1610.,  ..., 1399., 1411., 1409.]],
+
+        ...,
+
+        [[  75.,   75.,   75.,  ...,   63.,   63.,   63.],
+         [  75.,   75.,   75.,  ...,   64.,   63.,   63.],
+         [  75.,   75.,   75.,  ...,   64.,   63.,   63.],
+         ...,
+         [  58.,   58.,   56.,  ...,   72.,   72.,   72.],
+         [  58.,   58.,   56.,  ...,   72.,   72.,   72.],
+         [  59.,   59.,   57.,  ...,   72.,   72.,   72.]],
+
+        [[1353., 1373., 1373.,  ..., 1317., 1302., 1302.],
+         [1353., 1373., 1373.,  ..., 1397., 1435., 1435.],
+         [1271., 1289., 1289.,  ..., 1397., 1435., 1435.],
+         ...,
+         [ 936.,  936.,  836.,  ..., 1037., 1037., 1094.],
+         [ 936.,  936.,  836.,  ..., 1022., 1022., 1088.],
+         [1104., 1104.,  911.,  ..., 1022., 1022., 1088.]],
+
+        [[ 969.,  990.,  990.,  ...,  628.,  608.,  608.],
+         [ 969.,  990.,  990.,  ...,  656.,  675.,  675.],
+         [ 909.,  919.,  919.,  ...,  656.,  675.,  675.],
+         ...,
+         [ 486.,  486.,  434.,  ...,  713.,  713.,  769.],
+         [ 486.,  486.,  434.,  ...,  715.,  715.,  735.],
+         [ 534.,  534.,  461.,  ...,  715.,  715.,  735.]]]), &#39;S1GRD&#39;: tensor([[[ -9.9602,  -7.7862,  -8.1407,  ...,  -9.6625,  -9.1072,  -9.2555],
+         [-10.8665,  -8.7048,  -8.4692,  ..., -10.2500,  -9.0043,  -7.5955],
+         [-14.3133, -11.8438, -10.9352,  ..., -10.7672,  -9.9178,  -7.6601],
+         ...,
+         [-12.8762, -12.8075, -14.0131,  ..., -27.1866, -22.7705, -19.6072],
+         [-12.1411, -13.0040, -14.0607,  ..., -23.5941, -20.7373, -18.7654],
+         [-12.6473, -12.4982, -11.9617,  ..., -20.2752, -16.9165, -15.2799]],
+
+        [[-15.8637, -17.5174, -21.0243,  ..., -14.8746, -15.3383, -17.0097],
+         [-16.7099, -17.1415, -20.8201,  ..., -16.1758, -16.4631, -16.2313],
+         [-17.7207, -17.6200, -20.5174,  ..., -18.1527, -16.0881, -13.8843],
+         ...,
+         [-15.8255, -16.8408, -19.6716,  ..., -28.0262, -27.1480, -20.2132],
+         [-15.7210, -17.9658, -19.0917,  ..., -28.9606, -25.3054, -20.0457],
+         [-16.8375, -18.5694, -17.8265,  ..., -23.5058, -24.0952, -20.0863]]])}, &#39;filename&#39;: {&#39;S2L1C&#39;: &#39;sen1floods11_v1.1/data/S2L1CHand/Ghana_868803_S2Hand.tif&#39;, &#39;S1GRD&#39;: &#39;sen1floods11_v1.1/data/S1GRDHand/Ghana_868803_S1Hand.tif&#39;, &#39;mask&#39;: &#39;sen1floods11_v1.1/data/LabelHand/Ghana_868803_LabelHand.tif&#39;}}
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># Define the wrapper</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">safe_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">suptitle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="c1"># Fix the filename if it&#39;s a dict</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>        <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="c1"># Fix the image structure so indices work</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>    <span class="k">if</span> <span class="s2">&quot;S2L1C&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sample</span> <span class="ow">and</span> <span class="s2">&quot;image&quot;</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">:</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>        <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">][</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">]</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>    <span class="c1"># Call the original plot method</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_original_plot</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">)</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="c1"># Apply the fix to your specific object</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">rgb_indices</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]}</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">_original_plot</span> <span class="o">=</span> <span class="n">val_dataset</span><span class="o">.</span><span class="n">plot</span>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">safe_plot</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># The GenericMultiModalDataModule has an integrated plotting function with min/max scaling:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">val_dataset</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../images/output_17_0.png" /></p>
+<p><img alt="png" src="../images/output_17_1.png" /></p>
+<p><img alt="png" src="../images/output_17_2.png" /></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># checking datasets testing split size</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">datamodule</span><span class="o">.</span><span class="n">test_dataset</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nb">len</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">59</span><span class="p">:</span><span class="mf">09</span><span class="p">,</span><span class="mf">753</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Test</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">90</span>
+
+
+
+
+
+<span class="mf">90</span>
+</code></pre></div>
+
+<h2 id="terratorch-model-registry">TerraTorch model registry<a class="headerlink" href="#terratorch-model-registry" title="Permanent link">&para;</a></h2>
+<p>TerraTorch includes its own backbone registry with many EO FMs. It also includes meta registries for all model components that include other sources like timm image models or SMP decoders.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">terratorch.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONE_REGISTRY</span><span class="p">,</span> <span class="n">TERRATORCH_BACKBONE_REGISTRY</span><span class="p">,</span> <span class="n">TERRATORCH_DECODER_REGISTRY</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Print all TerraMind v1 backbones.  </span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="p">[</span><span class="n">backbone</span>   
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a> <span class="k">for</span> <span class="n">backbone</span> <span class="ow">in</span> <span class="n">TERRATORCH_BACKBONE_REGISTRY</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a> <span class="k">if</span> <span class="s1">&#39;terramind_v1&#39;</span> <span class="ow">in</span> <span class="n">backbone</span><span class="p">]</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1"># TiM models are using the Thinking-in-Modalities approach, see our paper for details.</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>[&#39;terramind_v1_base&#39;,
+ &#39;terramind_v1_base_tim&#39;,
+ &#39;terramind_v1_large&#39;,
+ &#39;terramind_v1_large_tim&#39;,
+ &#39;terramind_v1_tiny&#39;,
+ &#39;terramind_v1_tiny_tim&#39;,
+ &#39;terramind_v1_small&#39;,
+ &#39;terramind_v1_small_tim&#39;,
+ &#39;terramind_v1_tokenizer_s2l2a&#39;,
+ &#39;terramind_v1_tokenizer_s1rtc&#39;,
+ &#39;terramind_v1_tokenizer_s1grd&#39;,
+ &#39;terramind_v1_tokenizer_dem&#39;,
+ &#39;terramind_v1_tokenizer_lulc&#39;,
+ &#39;terramind_v1_tokenizer_ndvi&#39;]
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Available decoders. We use the UNetDecoder in this example.</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nb">list</span><span class="p">(</span><span class="n">TERRATORCH_DECODER_REGISTRY</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>[&#39;ASPPModule&#39;,
+ &#39;ASPPHead&#39;,
+ &#39;ASPPSegmentationHead&#39;,
+ &#39;ASPPRegressionHead&#39;,
+ &#39;FCNDecoder&#39;,
+ &#39;IdentityDecoder&#39;,
+ &#39;LinearDecoder&#39;,
+ &#39;MLPDecoder&#39;,
+ &#39;SatMAEHead&#39;,
+ &#39;UNetDecoder&#39;,
+ &#39;UperNetDecoder&#39;]
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Use the backbone registry to load a PyTorch model for a custom pipeline. The pre-trained weights are automatically downloaded with pretrained=True.</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">model</span> <span class="o">=</span> <span class="n">BACKBONE_REGISTRY</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="s2">&quot;terramind_v1_small&quot;</span><span class="p">,</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">modalities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">,</span> <span class="s2">&quot;S1GRD&quot;</span><span class="p">],</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="p">)</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="c1"># You find more information about the settings in the TerraMind docs: https://terrastackai.github.io/terratorch/stable/guide/terramind/</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">59</span><span class="p">:</span><span class="mf">11</span><span class="p">,</span><span class="mf">190</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">HTTP</span><span class="w"> </span><span class="n">Request</span><span class="p">:</span><span class="w"> </span><span class="n">HEAD</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">huggingface</span><span class="mf">.</span><span class="n">co</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">esa</span><span class="o">-</span><span class="n">geospatial</span><span class="o">/</span><span class="n">TerraMind</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">small</span><span class="o">/</span><span class="n">resolve</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">TerraMind_v1_small</span><span class="mf">.</span><span class="n">pt</span><span class="w"> </span><span class="s">&quot;HTTP/1.1 302 Found&quot;</span>
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">model</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">TerraMindViT</span><span class="p">(</span>
+<span class="w">  </span><span class="p">(</span><span class="n">encoder_embeddings</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">ModuleDict</span><span class="p">(</span>
+<span class="w">    </span><span class="p">(</span><span class="n">untok_sen2l1c</span><span class="mi">@224</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">ImageEncoderEmbedding</span><span class="p">(</span>
+<span class="w">      </span><span class="p">(</span><span class="n">proj</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">3328</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">False</span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="n">untok_sen1grd</span><span class="mi">@224</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">ImageEncoderEmbedding</span><span class="p">(</span>
+<span class="w">      </span><span class="p">(</span><span class="n">proj</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">False</span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="n">encoder</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">ModuleList</span><span class="p">(</span>
+<span class="w">    </span><span class="p">(</span><span class="mi">0-11</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">Block</span><span class="p">(</span>
+<span class="w">      </span><span class="p">(</span><span class="n">norm1</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">()</span>
+<span class="w">      </span><span class="p">(</span><span class="n">attn</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Attention</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="n">qkv</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">1152</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">attn_drop</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">inplace</span><span class="o">=</span><span class="n">False</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">proj</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">proj_drop</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">inplace</span><span class="o">=</span><span class="n">False</span><span class="p">)</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="n">drop_path</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Identity</span><span class="p">()</span>
+<span class="w">      </span><span class="p">(</span><span class="n">norm2</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">()</span>
+<span class="w">      </span><span class="p">(</span><span class="n">mlp</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Mlp</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="n">fc1</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">1536</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">act</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">GELU</span><span class="p">(</span><span class="n">approximate</span><span class="o">=</span><span class="err">&#39;</span><span class="n">none</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">fc2</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">1536</span><span class="p">,</span><span class="w"> </span><span class="n">out_features</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">drop</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">inplace</span><span class="o">=</span><span class="n">False</span><span class="p">)</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="n">encoder_norm</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">()</span>
+<span class="w">  </span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">ModuleDict</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="fine-tune-terramind-via-pytorch-lightning">Fine-tune TerraMind via PyTorch Lightning<a class="headerlink" href="#fine-tune-terramind-via-pytorch-lightning" title="Permanent link">&para;</a></h2>
+<p>With TerraTorch, we can use standard Lightning components for the fine-tuning.
+These include callbacks and the trainer class.
+TerraTorch provides EO-specific tasks that define the training and validation steps.
+In this case, we are using the <code>SemanticSegmentationTask</code>.
+We refer to the <a href="https://arxiv.org/abs/2503.20563">TerraTorch paper</a> for a detailed explanation of the TerraTorch tasks.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">terratorch.tasks</span>  <span class="c1"># Add this line to fix the AttributeError</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lightning.pytorch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="c1"># By default, TerraTorch saves the model with the best validation loss. You can overwrite this by defining a custom ModelCheckpoint, e.g., saving the model with the highest validation mIoU.  </span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="n">checkpoint_callback</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="n">dirpath</span><span class="o">=</span><span class="s2">&quot;output/terramind_small_sen1floods11/checkpoints/&quot;</span><span class="p">,</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val/mIoU&quot;</span><span class="p">,</span> <span class="c1"># Variable to monitor</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;best-mIoU&quot;</span><span class="p">,</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>    <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="p">)</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="c1"># Lightning Trainer</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>    <span class="n">accelerator</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>    <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>    <span class="n">devices</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># Deactivate multi-gpu because it often fails in notebooks</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>    <span class="n">precision</span><span class="o">=</span><span class="s2">&quot;16-mixed&quot;</span><span class="p">,</span>  <span class="c1"># Speed up training with half precision, delete for full precision training.</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>    <span class="n">num_nodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>    <span class="n">logger</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Uses TensorBoard by default</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1"># For demos</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>    <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">checkpoint_callback</span><span class="p">],</span>
+</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>    <span class="n">default_root_dir</span><span class="o">=</span><span class="s2">&quot;output/terramind_base_sen1floods11/&quot;</span><span class="p">,</span>
+</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a><span class="p">)</span>
+</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a>
+</span><span id="__span-19-26"><a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a><span class="c1"># Segmentation mask that build the model and handles training and validation steps.  </span>
+</span><span id="__span-19-27"><a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a><span class="n">model</span> <span class="o">=</span> <span class="n">terratorch</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">SemanticSegmentationTask</span><span class="p">(</span>
+</span><span id="__span-19-28"><a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a>    <span class="n">model_factory</span><span class="o">=</span><span class="s2">&quot;EncoderDecoderFactory&quot;</span><span class="p">,</span>  <span class="c1"># Combines a backbone with necks, the decoder, and a head</span>
+</span><span id="__span-19-29"><a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a>    <span class="n">model_args</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-19-30"><a id="__codelineno-19-30" name="__codelineno-19-30" href="#__codelineno-19-30"></a>        <span class="c1"># TerraMind backbone</span>
+</span><span id="__span-19-31"><a id="__codelineno-19-31" name="__codelineno-19-31" href="#__codelineno-19-31"></a>        <span class="s2">&quot;backbone&quot;</span><span class="p">:</span> <span class="s2">&quot;terramind_v1_small&quot;</span><span class="p">,</span>
+</span><span id="__span-19-32"><a id="__codelineno-19-32" name="__codelineno-19-32" href="#__codelineno-19-32"></a>        <span class="s2">&quot;backbone_pretrained&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-19-33"><a id="__codelineno-19-33" name="__codelineno-19-33" href="#__codelineno-19-33"></a>        <span class="s2">&quot;backbone_modalities&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">,</span> <span class="s2">&quot;S1GRD&quot;</span><span class="p">],</span>
+</span><span id="__span-19-34"><a id="__codelineno-19-34" name="__codelineno-19-34" href="#__codelineno-19-34"></a>        <span class="c1"># Optionally, define the input bands. This is only needed if you select a subset of the pre-training bands, as explained above.</span>
+</span><span id="__span-19-35"><a id="__codelineno-19-35" name="__codelineno-19-35" href="#__codelineno-19-35"></a>        <span class="c1"># &quot;backbone_bands&quot;: {&quot;S1GRD&quot;: [&quot;VV&quot;]},</span>
+</span><span id="__span-19-36"><a id="__codelineno-19-36" name="__codelineno-19-36" href="#__codelineno-19-36"></a>
+</span><span id="__span-19-37"><a id="__codelineno-19-37" name="__codelineno-19-37" href="#__codelineno-19-37"></a>        <span class="c1"># Necks </span>
+</span><span id="__span-19-38"><a id="__codelineno-19-38" name="__codelineno-19-38" href="#__codelineno-19-38"></a>        <span class="s2">&quot;necks&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span id="__span-19-39"><a id="__codelineno-19-39" name="__codelineno-19-39" href="#__codelineno-19-39"></a>            <span class="p">{</span>
+</span><span id="__span-19-40"><a id="__codelineno-19-40" name="__codelineno-19-40" href="#__codelineno-19-40"></a>                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SelectIndices&quot;</span><span class="p">,</span>
+</span><span id="__span-19-41"><a id="__codelineno-19-41" name="__codelineno-19-41" href="#__codelineno-19-41"></a>                <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span> <span class="c1"># indices for terramind_v1_base</span>
+</span><span id="__span-19-42"><a id="__codelineno-19-42" name="__codelineno-19-42" href="#__codelineno-19-42"></a>                <span class="c1"># &quot;indices&quot;: [5, 11, 17, 23] # indices for terramind_v1_large</span>
+</span><span id="__span-19-43"><a id="__codelineno-19-43" name="__codelineno-19-43" href="#__codelineno-19-43"></a>            <span class="p">},</span>
+</span><span id="__span-19-44"><a id="__codelineno-19-44" name="__codelineno-19-44" href="#__codelineno-19-44"></a>            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ReshapeTokensToImage&quot;</span><span class="p">,</span>
+</span><span id="__span-19-45"><a id="__codelineno-19-45" name="__codelineno-19-45" href="#__codelineno-19-45"></a>             <span class="s2">&quot;remove_cls_token&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>  <span class="c1"># TerraMind is trained without CLS token, which neads to be specified.</span>
+</span><span id="__span-19-46"><a id="__codelineno-19-46" name="__codelineno-19-46" href="#__codelineno-19-46"></a>            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LearnedInterpolateToPyramidal&quot;</span><span class="p">}</span>  <span class="c1"># Some decoders like UNet or UperNet expect hierarchical features. Therefore, we need to learn a upsampling for the intermediate embedding layers when using a ViT like TerraMind.</span>
+</span><span id="__span-19-47"><a id="__codelineno-19-47" name="__codelineno-19-47" href="#__codelineno-19-47"></a>        <span class="p">],</span>
+</span><span id="__span-19-48"><a id="__codelineno-19-48" name="__codelineno-19-48" href="#__codelineno-19-48"></a>
+</span><span id="__span-19-49"><a id="__codelineno-19-49" name="__codelineno-19-49" href="#__codelineno-19-49"></a>        <span class="c1"># Decoder</span>
+</span><span id="__span-19-50"><a id="__codelineno-19-50" name="__codelineno-19-50" href="#__codelineno-19-50"></a>        <span class="s2">&quot;decoder&quot;</span><span class="p">:</span> <span class="s2">&quot;UNetDecoder&quot;</span><span class="p">,</span>
+</span><span id="__span-19-51"><a id="__codelineno-19-51" name="__codelineno-19-51" href="#__codelineno-19-51"></a>        <span class="s2">&quot;decoder_channels&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+</span><span id="__span-19-52"><a id="__codelineno-19-52" name="__codelineno-19-52" href="#__codelineno-19-52"></a>        <span class="c1"># Warning for Mac users: The UNetDecoder can lead to some failures because of the batch norms when training on MPS.</span>
+</span><span id="__span-19-53"><a id="__codelineno-19-53" name="__codelineno-19-53" href="#__codelineno-19-53"></a>        <span class="c1"># Use a FCN decoder instead or install TerraTorch from main/v1.2.5 for a fix.</span>
+</span><span id="__span-19-54"><a id="__codelineno-19-54" name="__codelineno-19-54" href="#__codelineno-19-54"></a>
+</span><span id="__span-19-55"><a id="__codelineno-19-55" name="__codelineno-19-55" href="#__codelineno-19-55"></a>        <span class="c1"># Head</span>
+</span><span id="__span-19-56"><a id="__codelineno-19-56" name="__codelineno-19-56" href="#__codelineno-19-56"></a>        <span class="s2">&quot;head_dropout&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-19-57"><a id="__codelineno-19-57" name="__codelineno-19-57" href="#__codelineno-19-57"></a>        <span class="s2">&quot;num_classes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-19-58"><a id="__codelineno-19-58" name="__codelineno-19-58" href="#__codelineno-19-58"></a>    <span class="p">},</span>
+</span><span id="__span-19-59"><a id="__codelineno-19-59" name="__codelineno-19-59" href="#__codelineno-19-59"></a>
+</span><span id="__span-19-60"><a id="__codelineno-19-60" name="__codelineno-19-60" href="#__codelineno-19-60"></a>    <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;dice&quot;</span><span class="p">,</span>  <span class="c1"># We recommend dice for binary tasks and ce for tasks with multiple classes. </span>
+</span><span id="__span-19-61"><a id="__codelineno-19-61" name="__codelineno-19-61" href="#__codelineno-19-61"></a>    <span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;AdamW&quot;</span><span class="p">,</span>
+</span><span id="__span-19-62"><a id="__codelineno-19-62" name="__codelineno-19-62" href="#__codelineno-19-62"></a>    <span class="n">lr</span><span class="o">=</span><span class="mf">2e-5</span><span class="p">,</span>  <span class="c1"># The optimal learning rate varies between datasets, we recommend testing different once between 1e-5 and 1e-4. You can perform hyperparameter optimization using terratorch-iterate.  </span>
+</span><span id="__span-19-63"><a id="__codelineno-19-63" name="__codelineno-19-63" href="#__codelineno-19-63"></a>    <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;ReduceLROnPlateau&#39;</span><span class="p">,</span>  <span class="c1"># optionally define a learning rate scheduler and pass hparams</span>
+</span><span id="__span-19-64"><a id="__codelineno-19-64" name="__codelineno-19-64" href="#__codelineno-19-64"></a>    <span class="n">scheduler_hparams</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-19-65"><a id="__codelineno-19-65" name="__codelineno-19-65" href="#__codelineno-19-65"></a>        <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># This &quot;reduce LR on plateau&quot; scheduler multiplies the lr by &lt;factor&gt; when the val loss did not improve for &lt;patience&gt; epochs</span>
+</span><span id="__span-19-66"><a id="__codelineno-19-66" name="__codelineno-19-66" href="#__codelineno-19-66"></a>        <span class="s1">&#39;patience&#39;</span><span class="p">:</span> <span class="mi">5</span>
+</span><span id="__span-19-67"><a id="__codelineno-19-67" name="__codelineno-19-67" href="#__codelineno-19-67"></a>    <span class="p">},</span>
+</span><span id="__span-19-68"><a id="__codelineno-19-68" name="__codelineno-19-68" href="#__codelineno-19-68"></a>    <span class="n">ignore_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-19-69"><a id="__codelineno-19-69" name="__codelineno-19-69" href="#__codelineno-19-69"></a>    <span class="n">freeze_backbone</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># Only used to speed up fine-tuning in this demo, we highly recommend fine-tuning the backbone for the best performance.</span>
+</span><span id="__span-19-70"><a id="__codelineno-19-70" name="__codelineno-19-70" href="#__codelineno-19-70"></a>    <span class="n">freeze_decoder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Should be false in most cases as the decoder is randomly initialized.</span>
+</span><span id="__span-19-71"><a id="__codelineno-19-71" name="__codelineno-19-71" href="#__codelineno-19-71"></a>    <span class="n">plot_on_val</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Plot predictions during validation steps</span>
+</span><span id="__span-19-72"><a id="__codelineno-19-72" name="__codelineno-19-72" href="#__codelineno-19-72"></a>    <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Others&quot;</span><span class="p">,</span> <span class="s2">&quot;Water&quot;</span><span class="p">],</span>  <span class="c1"># optionally define class names</span>
+</span><span id="__span-19-73"><a id="__codelineno-19-73" name="__codelineno-19-73" href="#__codelineno-19-73"></a>    <span class="n">class_weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>  <span class="c1"># optionally define class weights for in-balanced datasets</span>
+</span><span id="__span-19-74"><a id="__codelineno-19-74" name="__codelineno-19-74" href="#__codelineno-19-74"></a><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="n">rank: 0</span><span class="o">]</span><span class="w"> </span><span class="n">Seed</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="mi">0</span>
+<span class="k">Using</span><span class="w"> </span><span class="mi">16</span><span class="nc">bit</span><span class="w"> </span><span class="n">Automatic</span><span class="w"> </span><span class="n">Mixed</span><span class="w"> </span><span class="k">Precision</span><span class="w"> </span><span class="p">(</span><span class="n">AMP</span><span class="p">)</span>
+<span class="n">GPU</span><span class="w"> </span><span class="nl">available</span><span class="p">:</span><span class="w"> </span><span class="k">True</span><span class="w"> </span><span class="p">(</span><span class="n">cuda</span><span class="p">),</span><span class="w"> </span><span class="nl">used</span><span class="p">:</span><span class="w"> </span><span class="k">True</span>
+<span class="n">TPU</span><span class="w"> </span><span class="nl">available</span><span class="p">:</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="k">using</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">TPU</span><span class="w"> </span><span class="n">cores</span>
+<span class="err">💡</span><span class="w"> </span><span class="nl">Tip</span><span class="p">:</span><span class="w"> </span><span class="k">For</span><span class="w"> </span><span class="n">seamless</span><span class="w"> </span><span class="n">cloud</span><span class="w"> </span><span class="n">logging</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">experiment</span><span class="w"> </span><span class="n">tracking</span><span class="p">,</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">installing</span><span class="w"> </span><span class="o">[</span><span class="n">litlogger</span><span class="o">]</span><span class="p">(</span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">pypi</span><span class="p">.</span><span class="n">org</span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">litlogger</span><span class="o">/</span><span class="p">)</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">enable</span><span class="w"> </span><span class="n">LitLogger</span><span class="p">,</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">logs</span><span class="w"> </span><span class="n">metrics</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">artifacts</span><span class="w"> </span><span class="n">automatically</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Lightning</span><span class="w"> </span><span class="n">Experiments</span><span class="w"> </span><span class="n">platform</span><span class="p">.</span>
+<span class="mi">2026</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">29</span><span class="w"> </span><span class="mi">11</span><span class="err">:</span><span class="mi">59</span><span class="err">:</span><span class="mi">15</span><span class="p">,</span><span class="mi">942</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">HTTP</span><span class="w"> </span><span class="nl">Request</span><span class="p">:</span><span class="w"> </span><span class="n">HEAD</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">huggingface</span><span class="p">.</span><span class="n">co</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">esa</span><span class="o">-</span><span class="n">geospatial</span><span class="o">/</span><span class="n">TerraMind</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">small</span><span class="o">/</span><span class="n">resolve</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">TerraMind_v1_small</span><span class="p">.</span><span class="n">pt</span><span class="w"> </span><span class="ss">&quot;HTTP/1.1 302 Found&quot;</span>
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">## This cell doesn&#39;t really work.</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="c1">## Before starting the fine-tuning, you can start the tensorboard with:</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="c1"># %reload_ext tensorboard</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># %tensorboard --logdir output --executable python -m tensorboard.main</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Training</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">59</span><span class="p">:</span><span class="mf">20</span><span class="p">,</span><span class="mf">535</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Train</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">252</span>
+<span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">11</span><span class="p">:</span><span class="mf">59</span><span class="p">:</span><span class="mf">20</span><span class="p">,</span><span class="mf">618</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">Val</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">89</span>
+<span class="n">LOCAL_RANK</span><span class="p">:</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">CUDA_VISIBLE_DEVICES</span><span class="p">:</span><span class="w"> </span><span class="err">[</span><span class="mf">0</span><span class="p">,</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="w">     </span><span class="err">]</span>
+</code></pre></div>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Name          </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Type             </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Params </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Mode  </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> FLOPs </span>┃
+┡━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 0 </span>│ model         │ PixelWiseModel   │ 26.6 M │ train │     0 │
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 1 </span>│ criterion     │ DiceLoss         │      0 │ train │     0 │
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 2 </span>│ train_metrics │ MetricCollection │      0 │ train │     0 │
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 3 </span>│ val_metrics   │ MetricCollection │      0 │ train │     0 │
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 4 </span>│ test_metrics  │ ModuleList       │      0 │ train │     0 │
+└───┴───────────────┴──────────────────┴────────┴───────┴───────┘
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Trainable params</span>: 3.9 M                                                                                            
+<span style="font-weight: bold">Non-trainable params</span>: 22.8 M                                                                                       
+<span style="font-weight: bold">Total params</span>: 26.6 M                                                                                               
+<span style="font-weight: bold">Total estimated model params size (MB)</span>: 106                                                                        
+<span style="font-weight: bold">Modules in train mode</span>: 290                                                                                         
+<span style="font-weight: bold">Modules in eval mode</span>: 0                                                                                            
+<span style="font-weight: bold">Total FLOPs</span>: 0                                                                                                     
+</pre>
+
+<div class="codehilite"><pre><span></span><code>Output()
+
+
+<span class="sb">`Trainer.fit`</span> stopped: <span class="sb">`max_epochs=3`</span> reached.
+</code></pre></div>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<p>After fine-tuning, we can evaluate the model on the test set:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Let&#39;s test the fine-tuned model</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">best_ckpt_path</span> <span class="o">=</span> <span class="s2">&quot;output/terramind_small_sen1floods11/checkpoints/best-mIoU.ckpt&quot;</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">,</span> <span class="n">ckpt_path</span><span class="o">=</span><span class="n">best_ckpt_path</span><span class="p">)</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="c1"># Note: This demo only trains for 5 epochs by default, which does not result in good test metrics.</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">12</span><span class="p">:</span><span class="mf">01</span><span class="p">:</span><span class="mf">41</span><span class="p">,</span><span class="mf">576</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Test</span><span class="w"> </span><span class="kd">data</span><span class="n">set</span><span class="p">:</span><span class="w"> </span><span class="mf">90</span>
+<span class="n">Restoring</span><span class="w"> </span><span class="n">states</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">checkpoint</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">output</span><span class="o">/</span><span class="n">terramind_small_sen1floods11</span><span class="o">/</span><span class="n">checkpoints</span><span class="o">/</span><span class="n">best</span><span class="o">-</span><span class="n">mIoU</span><span class="mf">.</span><span class="n">ckpt</span>
+<span class="n">LOCAL_RANK</span><span class="p">:</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">CUDA_VISIBLE_DEVICES</span><span class="p">:</span><span class="w"> </span><span class="err">[</span><span class="mf">0</span><span class="p">,</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="w">     </span><span class="err">]</span>
+<span class="kr">Load</span><span class="n">ed</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">checkpoint</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">output</span><span class="o">/</span><span class="n">terramind_small_sen1floods11</span><span class="o">/</span><span class="n">checkpoints</span><span class="o">/</span><span class="n">best</span><span class="o">-</span><span class="n">mIoU</span><span class="mf">.</span><span class="n">ckpt</span>
+
+
+
+<span class="n">Output</span><span class="p">()</span>
+</code></pre></div>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">        Test metric         </span>┃<span style="font-weight: bold">        DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       test/Accuracy        </span>│<span style="color: #800080; text-decoration-color: #800080">     0.9148920774459839     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">     test/Boundary_mIoU     </span>│<span style="color: #800080; text-decoration-color: #800080">    0.07077613472938538     </span>│
+│<span style="color: #008080; text-decoration-color: #008080"> test/Class_Accuracy_Others </span>│<span style="color: #800080; text-decoration-color: #800080">     0.925486147403717      </span>│
+│<span style="color: #008080; text-decoration-color: #008080"> test/Class_Accuracy_Water  </span>│<span style="color: #800080; text-decoration-color: #800080">     0.9042980074882507     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       test/F1_Score        </span>│<span style="color: #800080; text-decoration-color: #800080">     0.8500796556472778     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      test/IoU_Others       </span>│<span style="color: #800080; text-decoration-color: #800080">     0.9129959344863892     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       test/IoU_Water       </span>│<span style="color: #800080; text-decoration-color: #800080">     0.5944382548332214     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">    test/Pixel_Accuracy     </span>│<span style="color: #800080; text-decoration-color: #800080">     0.9228361248970032     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">         test/loss          </span>│<span style="color: #800080; text-decoration-color: #800080">     0.3882979154586792     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">         test/mIoU          </span>│<span style="color: #800080; text-decoration-color: #800080">     0.7537170648574829     </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      test/mIoU_Micro       </span>│<span style="color: #800080; text-decoration-color: #800080">     0.856727659702301      </span>│
+└────────────────────────────┴────────────────────────────┘
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<div class="codehilite"><pre><span></span><code>[{&#39;test/loss&#39;: 0.3882979154586792,
+  &#39;test/Accuracy&#39;: 0.9148920774459839,
+  &#39;test/Boundary_mIoU&#39;: 0.07077613472938538,
+  &#39;test/Class_Accuracy_Others&#39;: 0.925486147403717,
+  &#39;test/Class_Accuracy_Water&#39;: 0.9042980074882507,
+  &#39;test/F1_Score&#39;: 0.8500796556472778,
+  &#39;test/IoU_Others&#39;: 0.9129959344863892,
+  &#39;test/IoU_Water&#39;: 0.5944382548332214,
+  &#39;test/Pixel_Accuracy&#39;: 0.9228361248970032,
+  &#39;test/mIoU&#39;: 0.7537170648574829,
+  &#39;test/mIoU_Micro&#39;: 0.856727659702301}]
+</code></pre></div>
+
+<div class="language-python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Now we can use the model for predictions and plotting</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">model</span> <span class="o">=</span> <span class="n">terratorch</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">SemanticSegmentationTask</span><span class="o">.</span><span class="n">load_from_checkpoint</span><span class="p">(</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">best_ckpt_path</span><span class="p">,</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="n">model_factory</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">model_factory</span><span class="p">,</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">model_args</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">model_args</span><span class="p">,</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="p">)</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="n">test_loader</span> <span class="o">=</span> <span class="n">datamodule</span><span class="o">.</span><span class="n">test_dataloader</span><span class="p">()</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>    <span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_loader</span><span class="p">))</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>    <span class="n">batch</span> <span class="o">=</span> <span class="n">datamodule</span><span class="o">.</span><span class="n">aug</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>    <span class="nb">input</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>    <span class="k">for</span> <span class="n">mod</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">input</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>        <span class="nb">input</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>    <span class="n">masks</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a>
+</span><span id="__span-23-19"><a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a>    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+</span><span id="__span-23-20"><a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a>        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</span><span id="__span-23-21"><a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a>
+</span><span id="__span-23-22"><a id="__codelineno-23-22" name="__codelineno-23-22" href="#__codelineno-23-22"></a>    <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span><span id="__span-23-23"><a id="__codelineno-23-23" name="__codelineno-23-23" href="#__codelineno-23-23"></a>
+</span><span id="__span-23-24"><a id="__codelineno-23-24" name="__codelineno-23-24" href="#__codelineno-23-24"></a><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+</span><span id="__span-23-25"><a id="__codelineno-23-25" name="__codelineno-23-25" href="#__codelineno-23-25"></a>    <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-23-26"><a id="__codelineno-23-26" name="__codelineno-23-26" href="#__codelineno-23-26"></a>        <span class="s2">&quot;S2L1C&quot;</span><span class="p">:</span> <span class="n">image</span><span class="p">[</span><span class="s2">&quot;S2L1C&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span>
+</span><span id="__span-23-27"><a id="__codelineno-23-27" name="__codelineno-23-27" href="#__codelineno-23-27"></a>        <span class="s2">&quot;S1GRD&quot;</span><span class="p">:</span> <span class="n">image</span><span class="p">[</span><span class="s2">&quot;S1GRD&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span>
+</span><span id="__span-23-28"><a id="__codelineno-23-28" name="__codelineno-23-28" href="#__codelineno-23-28"></a>        <span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+</span><span id="__span-23-29"><a id="__codelineno-23-29" name="__codelineno-23-29" href="#__codelineno-23-29"></a>        <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">preds</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="__span-23-30"><a id="__codelineno-23-30" name="__codelineno-23-30" href="#__codelineno-23-30"></a>    <span class="p">}</span>
+</span><span id="__span-23-31"><a id="__codelineno-23-31" name="__codelineno-23-31" href="#__codelineno-23-31"></a>    <span class="n">test_dataset</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+</span><span id="__span-23-32"><a id="__codelineno-23-32" name="__codelineno-23-32" href="#__codelineno-23-32"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span id="__span-23-33"><a id="__codelineno-23-33" name="__codelineno-23-33" href="#__codelineno-23-33"></a>
+</span><span id="__span-23-34"><a id="__codelineno-23-34" name="__codelineno-23-34" href="#__codelineno-23-34"></a><span class="c1"># Note: This demo only trains for 5 epochs by default, which does not result in good predictions.</span>
+</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="mf">2026</span><span class="o">-</span><span class="mf">04</span><span class="o">-</span><span class="mf">29</span><span class="w"> </span><span class="mf">12</span><span class="p">:</span><span class="mf">01</span><span class="p">:</span><span class="mf">54</span><span class="p">,</span><span class="mf">804</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">INFO</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">HTTP</span><span class="w"> </span><span class="n">Request</span><span class="p">:</span><span class="w"> </span><span class="n">HEAD</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">huggingface</span><span class="mf">.</span><span class="n">co</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">esa</span><span class="o">-</span><span class="n">geospatial</span><span class="o">/</span><span class="n">TerraMind</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">small</span><span class="o">/</span><span class="n">resolve</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">TerraMind_v1_small</span><span class="mf">.</span><span class="n">pt</span><span class="w"> </span><span class="s">&quot;HTTP/1.1 302 Found&quot;</span>
+</code></pre></div>
+
+<p><img alt="png" src="../images/output_32_1.png" /></p>
+<p><img alt="png" src="../images/output_32_2.png" /></p>
+<p><img alt="png" src="../images/output_32_3.png" /></p>
+<p><img alt="png" src="../images/output_32_4.png" /></p>
+<p><img alt="png" src="../images/output_32_5.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 LuxProvide
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.expand", "toc.integrate", "content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+        <script src="../javascripts/bootstrap.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+      
+        <script src="../javascripts/tables.js"></script>
+      
+        <script src="../javascripts/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
